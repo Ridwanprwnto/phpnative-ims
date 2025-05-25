@@ -1,0 +1,151 @@
+## Foreword
+Unfortunately, it's long time not to see the update of jOrgChart. on the other hand, I got some interesting ideas to add, so I choose to create a new repo. **Since version 3.0, we use nested ul to construct tree-like chart instead of nested table.**
+
+## Features
+- Supports both local data and remote data (JSON).
+- Smooth expand/collapse effects based on CSS3 transitions.
+- Align the chart in 4 orientations.
+- Allows user to change orgchart structure by drag/drop nodes.
+- Allows user to edit orgchart dynamically and save the final hierarchy as a JSON object.
+- Supports exporting chart as a picture or pdf document.
+- Supports pan and zoom.
+- Allows user to customize the internal structure for every node.
+- Users can adopt multiple solutions to build up a huge organization chart(please refer to multiple-layers or hybrid layout sections).
+- touch-enabled plugin for mobile device.
+
+## Installation
+
+## Browser Compatibility
+- Chrome 19+
+- Firefox 4+
+- Safari 6+
+- Opera 15+
+- IE 10+
+
+## Version
+
+    // # Version 2.0.1.8
+// ---------------------------- //
+// * Serah Terima HH
+// - Adanya jagaan tidak bisa menambahkan handheld jika data handheld yg keluar / dipinjam belum kembali
+// ---------------------------- //
+
+    // # Version 2.0.1.9
+// ---------------------------- //
+// * Cetak Sticker Barcode Aktiva
+// - Adanya fitur tambahan report sticker barcode aktiva
+// ---------------------------- //
+
+    // # Version 2.0.2.0
+// ---------------------------- //
+// * Search Menu
+// - Adanya fitur tambahan untuk pencarian menu
+// ---------------------------- //
+
+    // # Version 2.0.2.1
+// ---------------------------- //
+// * Serah Terima Handheld
+// - Adanya fitur tambahan untuk serah terima battery
+// ---------------------------- //
+
+    // # Version 2.0.2.2
+// ---------------------------- //
+// * Company IMS
+// - Bug fixing insert masterjenis to table
+// - Syncronisasi tabel company dengan tabel office
+// ---------------------------- //
+
+    // # Version 2.0.3.0
+// ---------------------------- //
+// * Rekap Pelanggaran CCTV
+// - Penambahan Fitur Menu Entry Pelanggaran CCTV
+// - Penambahan Fitur Menu FUP Pelanggaran CCTV
+// - Penambahan Fitur Menu Approval Pelanggaran CCTV
+// - Penambahan Fitur Menu Laporan Rekap Pelanggaran CCTV
+// - Penambahan Fitur Menu Laporan Kejadian Pelanggaran CCTV
+// - Penambahan Fitur Menu Laporan Summary Pelanggaran CCTV Per Bagian
+// - Penambahan Fitur Menu Laporan Summary Pelanggaran CCTV Per Users
+// ---------------------------- //
+
+    // # Version 2.0.3.1
+// ---------------------------- //
+// * Session Expired With Ajax
+// - Perubahan Fungsi Sesion Ketika Waktu Habis Muncul Alert
+// ---------------------------- //
+
+    // # Version 2.0.3.2
+// ---------------------------- //
+// * Surat Jalan Keluar Masuk
+// - Perubahan Fungsi Surat Jalan Keluar Dan Masuk Merubah Lokasi Office Barang Dan Merubah Stock Keluar Masuk
+// ---------------------------- //
+
+    // # Version 2.0.3.3
+// ---------------------------- //
+// * Reset Password
+// - Penambahan Fitur Data User Yang Melakukan Reset Password Datanya Ditampung Di Menu Reset Password Users
+// ---------------------------- //
+
+    // # Version 2.0.3.4
+// ---------------------------- //
+// * Pelanggaran CCTV
+// - Perubahan Fitur Play Rekaman Pelanggaran CCTV Dengan Popup Window, Edit Kategori Pelanggaran CCTV dan Edit Jenis Pelanggaran CCTV 
+// ---------------------------- //
+
+    // # Version 2.0.3.5
+// ---------------------------- //
+// * Pelanggaran CCTV
+// - Perubahan Format Reporting Rekap Kejadian Terekam CCTV Berdasarkan Bagian
+// ---------------------------- //
+
+    // # Version 2.0.3.6
+// ---------------------------- //
+// * Entry Barang Inventaris
+// - Bug Fixing Delete Data Barang Inventaris
+// ---------------------------- //
+
+    // # Version 2.0.3.7
+// ---------------------------- //
+// * Stock Opname Barang Inventaris
+// - Fixing Bug SO Aktiva dan Non Aktiva
+// ---------------------------- //
+
+    // # Version 2.0.3.8
+// ---------------------------- //
+// * Buat SJ
+// - Update Fitur Menambahkan Tujuan Buat SJ Untuk Perbaikan Atau Pengajuan SK rekomendasi Pemusnahan
+// * Buat P3AT
+// - Approval Sign Dynamically P3AT
+// ---------------------------- //
+
+    // # Version 2.0.3.9
+// ---------------------------- //
+// * Entry Mutasi Barang
+// - Update UI Entry Mutasi Barang Jenis Pengeluaran Dan Delete Fitur Penerimaan
+// ---------------------------- //
+
+    // # Version 2.0.4.0
+// ---------------------------- //
+// * ALL Fixing Bug, New Fitur & New Reporting
+// - Fixing Bug LAT Barang Inventaris, Reprint BAK Sarana Elektrikal & Reprint BKB Sarana Elektrikal & Added Reporting
+// ---------------------------- //
+
+    // # Version 2.0.4.1
+// ---------------------------- //
+// * Pelanggaran CCTV
+// - Perubahan Fitur Entry Pelanggaran CCTV, FUP Pelanggaran CCTV & Approval Pelanggaran CCTV
+// - Fixing Reporting
+// - Added Fiture User Tercatat Pelanggaran CCTV Ditampilkan Kedalam Dashboard
+// - Added Fiture History Pelanggaran CCTV
+// ---------------------------- //
+
+    // # Version 2.0.4.2
+// ---------------------------- //
+// * Report Data Barang Inventaris
+// - Penambahan Fitur Menampilkan Data User, Tgl Perubahan Data & Referensi Transaksi
+// ---------------------------- //
+
+    // # Version 2.0.4.3
+// ---------------------------- //
+// * Report Data BAK
+// - Penambahan Fitur Menampilkan Report Daftar History BAK
+// ---------------------------- //
