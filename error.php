@@ -89,6 +89,21 @@ data-open="click" data-menu="vertical-menu-modern" data-col="1-column">
                       </div>
                       <?php
                       }
+                      else {
+                        ?>
+                        <div class="card-header bg-transparent border-0">
+                          <h2 class="error-code text-center mb-2">404</h2>
+                          <h3 class="text-uppercase text-center"><?= $decid; ?></h3>
+                        </div>
+                        <div class="card-content ">
+                          <div class="row py-2">
+                            <div class="col-12">
+                              <a href="index.php" class="btn btn-primary btn-block"><i class="ft-refresh-cw"></i> Refresh</a>
+                            </div>
+                          </div>
+                        </div>
+                        <?php
+                      }
                     }
                     else {
                       ?>
