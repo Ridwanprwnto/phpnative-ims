@@ -6,8 +6,6 @@ $div_id = $_SESSION['divisi'];
 
 $page_id = $_GET['page'];
 
-// $_SESSION['PRINT-ASSESSMENT'] = $_POST;
-
 $strplus_pi = rplplus($page_id);
 $dec_page = decrypt($strplus_pi);
 
@@ -24,7 +22,7 @@ if(isset($_POST["insertdata"])){
 }
 elseif(isset($_POST["finishdata"])){
     if(FinalPeriodePenilaianTahunan($_POST)){
-        $datapost = isset($_POST["tahun-updbuatperiodeassest"]) ? $_POST["tahun-updbuatperiodeassest"] : NULL;
+        $datapost = isset($_POST["tahun-fnsbuatperiodeassest"]) ? $_POST["tahun-fnsbuatperiodeassest"] : NULL;
         $alert = array("Success!", "Laporan Penilaian Periode Tahun ".$datapost." Berhasil Ditutup", "success", "$encpid");
     }
     else {
@@ -368,7 +366,7 @@ elseif(isset($_POST["resetdataleader"])){
                                                     INNER JOIN divisi AS E ON D.div_data_assest = E.id_divisi
                                                     INNER JOIN users AS F ON D.junior_data_assest = F.nik
                                                     INNER JOIN divisi_assessment AS G ON A.code_sts_assest = G.head_code_sts_assest
-                                                    WHERE A.office_sts_assest = '$office_id' AND A.dept_sts_assest = '$dept_id' AND G.head_id_divisi = '$div_id' ORDER BY A.tahun_sts_assest DESC");
+                                                    WHERE A.office_sts_assest = '$office_id' AND A.dept_sts_assest = '$dept_id' AND G.head_id_divisi = '$div_id' GROUP BY D.th_data_assest, D.junior_data_assest ORDER BY A.tahun_sts_assest DESC");
                                                     while($data_mon = mysqli_fetch_assoc($query_mon)) {
                                                     ?>
                                                     <tr>
@@ -386,7 +384,7 @@ elseif(isset($_POST["resetdataleader"])){
                                                         <td><?= $data_mon['dept_sts_assest']." - ".strtoupper($data_mon['department_name']); ?></td>
                                                         <td><?= $data_mon['div_data_assest']." - ".strtoupper($data_mon['divisi_name']); ?></td>
                                                         <td>
-                                                            <button type="button" class="btn btn-icon btn-danger delete_datapenilaian" title="Reset Penilaian Periode Tahun <?= $data_mon['tahun_sts_assest']; ?> NIK <?= $data_mon['junior_data_assest']; ?>" name="delete_datapenilaian" id="<?= $data_mon["junior_data_assest"].$data_mon["code_sts_assest"].$data_mon["id_sts_assest"]; ?>" data-toggle="tooltip" data-placement="bottom"><i class="ft-delete"></i></button>
+                                                            <button type="button" class="btn btn-icon btn-danger delete_datapenilaian" title="Reset Penilaian Periode Tahun <?= $data_mon['tahun_sts_assest']; ?> NIK <?= $data_mon['junior_data_assest']; ?>" name="delete_datapenilaian" id="<?= $data_mon["junior_data_assest"].$data_mon["code_sts_assest"].$data_mon["id_sts_assest"]; ?>" data-toggle="tooltip" data-placement="bottom" <?= $data_mon["flag_sts_assest"] == "N" ? "" : "disabled"; ?>><i class="ft-delete"></i></button>
                                                         </td>
                                                     </tr>
                                                     <?php
@@ -626,11 +624,11 @@ $(document).ready(function () {
                         title: 'STATUS',
                         data: null,
                         render: function(data, type, row) {
-                            if (row.STATUS_ASSESST == "FINAL") {
-                                return '<div class="badge badge-info">'+row.STATUS_ASSESST+'</div>'
+                            if (row.STATUS_ASSESST == "Y") {
+                                return '<div class="badge badge-info">FINAL</div>'
                             }
-                            else if (row.STATUS_ASSESST == "DRAFT") {
-                                return '<div class="badge badge-warning">'+row.STATUS_ASSESST+'</div>'
+                            else if (row.STATUS_ASSESST == "N") {
+                                return '<div class="badge badge-warning">DRAFT</div>'
                             }
                         }
                     },
@@ -638,7 +636,13 @@ $(document).ready(function () {
                         title: 'ACTION',
                         data: null,
                         render: function(data, type, row) {
-                            return '<button type="button" class="btn btn-icon btn-danger delete_nikpenilaian" title="Reset Laporan Penilaian Leader ' + row.LEADER_ASSESST.toUpperCase() + ' Periode Tahun ' + row.THN_ASSESST + '" name="delete_nikpenilaian" id="' + row.DOCNO_ASSESST + '" data-toggle="tooltip" data-placement="bottom"><i class="ft-delete"></i></button> <a title="Cetak Laporan Hasil Evaluasi Penilaian Leader '+ row.LEADER_ASSESST.toUpperCase() + ' Periode Tahun ' + row.THN_ASSESST + '" href="reporting/report-form-evaluasi-penilaian.php?docno=' + row.ENCRYPT_ASSESST + '" class="btn btn-icon btn-info" data-toggle="tooltip" data-placement="bottom" onclick="return postSESSION();" target="_blank"><i class="ft-printer"></i></a>';
+                            if (row.STATUS_ASSESST == "Y") {
+                                var btnFlagStatus = "disabled";
+                            }
+                            else if (row.STATUS_ASSESST == "N") {
+                                var btnFlagStatus = "";
+                            }
+                            return '<button type="button" class="btn btn-icon btn-danger delete_nikpenilaian" title="Reset Laporan Penilaian Leader ' + row.LEADER_ASSESST.toUpperCase() + ' Periode Tahun ' + row.THN_ASSESST + '" name="delete_nikpenilaian" id="' + row.DOCNO_ASSESST + '" data-toggle="tooltip" data-placement="bottom" ' + btnFlagStatus + '><i class="ft-delete"></i></button> <a title="Cetak Laporan Hasil Evaluasi Penilaian Leader '+ row.LEADER_ASSESST.toUpperCase() + ' Periode Tahun ' + row.THN_ASSESST + '" href="reporting/report-form-evaluasi-penilaian.php?docno=' + row.ENCRYPT_ASSESST + '" class="btn btn-icon btn-info" data-toggle="tooltip" data-placement="bottom" onclick="return postSESSION();" target="_blank"><i class="ft-printer"></i></a>';
                         }
                     }
                 ],

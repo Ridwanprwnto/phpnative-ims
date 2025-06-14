@@ -9734,6 +9734,7 @@ function CreatePenilaianTahunan($data) {
     $junior = htmlspecialchars(mysqli_real_escape_string($conn, $data["junior-assesment"]));
     $nilai = htmlspecialchars(mysqli_real_escape_string($conn, $data["poin-assesment"]));
     $mutu = htmlspecialchars(mysqli_real_escape_string($conn, $data["mutu-assesment"]));
+    $avg = htmlspecialchars(mysqli_real_escape_string($conn, $data["avg-assesment"]));
     $note = htmlspecialchars(mysqli_real_escape_string($conn, strtoupper($data["note-assesment"])));
     $idmax = autonum(4, 'docno_data_assest', 'data_assessment');
     $date   = date("Y-m-d H:i:s");
@@ -9796,12 +9797,23 @@ function CreatePenilaianTahunan($data) {
         $nm_indikator = $data_indikator["num_ind_assest"].". ".$data_indikator["name_ind_assest"];
         $jm_indikator = $data_indikator["jumlah_grade"];
         $poin_indikator = $value[1];
+
+        if ($poin_indikator >= 85) {
+            $mutuFix = 'A';
+        } else if ($poin_indikator >= 70) {
+            $mutuFix = 'B';
+        } else if ($poin_indikator >= 55) {
+            $mutuFix = 'C';
+        } else if ($poin_indikator >= 30) {
+            $mutuFix = 'D';
+        }
+
         $grade = ($poin_indikator / 100 * $jm_indikator);
 
-        mysqli_query($conn, "INSERT INTO sub_data_assessment (head_docno_data_assest, indikator_sub_data_assest, poin_sub_data_assest, grade_sub_data_assest, skala_sub_data_assest) VALUES ('$idmax', '$nm_indikator', '$poin_indikator', '$grade', '$jm_indikator')");
+        mysqli_query($conn, "INSERT INTO sub_data_assessment (head_docno_data_assest, indikator_sub_data_assest, poin_sub_data_assest, grade_sub_data_assest, skala_sub_data_assest, mutu_sub_data_assest) VALUES ('$idmax', '$nm_indikator', '$poin_indikator', '$grade', '$jm_indikator', '$mutuFix')");
     }
 
-    mysqli_query($conn, "INSERT INTO data_assessment (head_id_sts_assest, docno_data_assest, date_data_assest, office_data_assest, dept_data_assest, div_data_assest, lvl_data_assest, th_data_assest, leader_data_assest, junior_data_assest, poin_data_assest, mutu_data_assest, note_data_assest) VALUES ('$id_tahun', '$idmax', '$date', '$office', '$dept', '$div', '$lvl', '$tahun', '$senior', '$junior', '$nilai', '$mutu', '$note')");
+    mysqli_query($conn, "INSERT INTO data_assessment (head_id_sts_assest, docno_data_assest, date_data_assest, office_data_assest, dept_data_assest, div_data_assest, lvl_data_assest, th_data_assest, leader_data_assest, junior_data_assest, poin_data_assest, mutu_data_assest, avg_data_assest, note_data_assest) VALUES ('$id_tahun', '$idmax', '$date', '$office', '$dept', '$div', '$lvl', '$tahun', '$senior', '$junior', '$nilai', '$mutu', '$avg', '$note')");
 
     mysqli_query($conn, "UPDATE leader_assessment SET status_leader_assest = 'Y' WHERE officer_leader_assest = '$senior' AND junior_leader_assest = '$junior' AND head_code_sts_assest = '$doc'");
 

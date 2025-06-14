@@ -207,11 +207,15 @@ if(isset($_POST["insertdataassesment"])){
                             ?>
                             </table>
                             <div class="row">
-                                <div class="form-group col-6 mb-2">
-                                    <label>Poin : </label>
+                                <div class="form-group col-4 mb-2">
+                                    <label>Jumlah Poin : </label>
                                     <input type="text" value="0" name="poin-assesment" id="poin-assesment" class="form-control" readonly>
                                 </div>
-                                <div class="form-group col-6 mb-2">
+                                <div class="form-group col-4 mb-2">
+                                    <label>Poin Rata-rata : </label>
+                                    <input type="text" value="0" name="avg-assesment" id="avg-assesment" class="form-control" readonly>
+                                </div>
+                                <div class="form-group col-4 mb-2">
                                     <label>Grade : </label>
                                     <input type="text" value="-" name="mutu-assesment" id="mutu-assesment" class="form-control" readonly>
                                 </div>
@@ -353,16 +357,57 @@ function ResetForm() {
     $("#form_entryemployee").find('select').select2().val('').trigger('change');
 }
 
+const gradeScales = [
+    { scale: 4, grade: 'A', points: [100, 90, 85] },
+    { scale: 3, grade: 'B', points: [80, 75, 70] },
+    { scale: 2, grade: 'C', points: [65, 60, 55] },
+    { scale: 1, grade: 'D', points: [50, 40, 30] }
+];
+
+function calculateGradeByAverage(averagePoint) {
+    let gradeThresholds = [];
+    gradeScales.forEach(scaleObj => {
+      const maxPoint = Math.max(...scaleObj.points);
+      const minPoint = Math.min(...scaleObj.points);
+      gradeThresholds.push({
+        grade: scaleObj.grade,
+        min: minPoint,
+        max: maxPoint,
+        scale: scaleObj.scale,
+      });
+    });
+    gradeThresholds.sort((a,b) => b.min - a.min);
+    for(let i=0; i<gradeThresholds.length; i++) {
+      if(averagePoint >= gradeThresholds[i].min) {
+        return gradeThresholds[i].grade;
+      }
+    }
+    return 'No Grade';
+}
+
 function CalculatePoin() {
-    var totalValue = 0;
+    let totalValue = 0;
     var totalChecked = $('input[type="radio"][name^="pointassesment-"]:checked').length;
+
+    if (totalChecked === 0) {
+        alert('Silakan pilih nilai untuk semua pertanyaan sebelum menghitung.');
+        return;
+    }
+    if (totalChecked < 13) {
+        alert('Mohon lengkapi semua pertanyaan.');
+        return;
+    }
 
     $('input[type="radio"]:checked').each(function() {
         totalValue += parseInt($(this).val());
     });
 
+    const averagePoint = totalValue / totalChecked;
+    const grade = calculateGradeByAverage(averagePoint);
+
     $('#poin-assesment').val(totalValue);
-    $('#mutu-assesment').val(totalChecked);
+    $('#mutu-assesment').val(grade);
+    $('#avg-assesment').val(averagePoint);
 
 }
 </script>

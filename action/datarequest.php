@@ -3696,7 +3696,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $nik = substr($dataid, 0, 10);
         $id = substr($dataid, 10);
 
-        $sql = "SELECT A.head_id_sts_assest AS ID_ASSESST, A.docno_data_assest AS DOCNO_ASSESST, A.th_data_assest AS THN_ASSESST, A.date_data_assest AS DATE_ASSESST, CONCAT(A.leader_data_assest, ' - ', B.username) AS LEADER_ASSESST, A.poin_data_assest AS POIN_ASSESST, A.mutu_data_assest AS GRADE_ASSESST, IF(A.status_data_assest = 'Y', 'FINAL', 'DRAFT') AS STATUS_ASSESST FROM data_assessment AS A
+        $sql = "SELECT A.head_id_sts_assest AS ID_ASSESST, A.docno_data_assest AS DOCNO_ASSESST, A.th_data_assest AS THN_ASSESST, A.date_data_assest AS DATE_ASSESST, CONCAT(A.leader_data_assest, ' - ', B.username) AS LEADER_ASSESST, A.poin_data_assest AS POIN_ASSESST, A.mutu_data_assest AS GRADE_ASSESST, A.status_data_assest AS STATUS_ASSESST FROM data_assessment AS A
         INNER JOIN users AS B ON A.leader_data_assest = B.nik
         WHERE A.head_id_sts_assest = '$id' AND A.junior_data_assest = '$nik'";
 
@@ -3857,15 +3857,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <th scope="row"><?= $no++;?></th>
                             <td><?= $data_detail['indikator_sub_data_assest'];?></td>
                             <td><?= $data_detail['poin_sub_data_assest'];?></td>
-                            <td><?= $data_detail['grade_sub_data_assest'];?></td>
+                            <td><?= $data_detail['mutu_sub_data_assest'];?></td>
                         </tr>
                     <?php 
                         }
                     ?>
                     <tr>
-                        <td colspan="2">NILAI RATA-RATA</td>
-                        <td></td>
-                        <td></td>
+                        <td colspan="2">NILAI</td>
+                        <td><?= $data_header['poin_data_assest'];?></td>
+                        <td><?= $data_header['mutu_data_assest'];?></td>
                     </tr>
                     </tbody>
                 </table>
