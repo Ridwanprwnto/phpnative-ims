@@ -1,0 +1,27 @@
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php
+</IfModule>
+
+RewriteRule ^(includes/|submit\.php) - [F,L,NC]
+RewriteRule ^(src/|submit\.php) - [F,L,NC]
+RewriteRule ^(vendor/|submit\.php) - [F,L,NC]
+
+#Protect the .htaccess
+<files .htaccess="">
+order allow,deny
+deny from all
+</files>
+
+<Files ~"^.*\.([Hh][Tt][Aa])">
+    order allow,deny
+    deny from all
+    satisfy all
+</Files>
+
+Header set X-XSS-Protection "1; mode=block"
+
+#directory browsing
+Options All -Indexes
