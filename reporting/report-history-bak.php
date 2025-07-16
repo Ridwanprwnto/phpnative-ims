@@ -12,28 +12,17 @@ $office = mysqli_real_escape_string($conn, $_POST["office-cetak"]);
 $dept = mysqli_real_escape_string($conn, $_POST["dept-cetak"]);
 $awal = $_POST["awal-cetak"];
 $akhir = $_POST["akhir-cetak"];
-$barang = $_POST["barang-cetak"];
+$barang = $_POST["barangcetak"];
+$arrdata = implode(", ", $barang);
 
-if ($barang == "ALL") {
-    $sql = "SELECT A.*, B.id_office, B.office_name, B.office_city, C.id_department, C.department_name, D.divisi_name, E.NamaBarang, F.NamaJenis, G.username AS pic FROM bkse AS A 
-    INNER JOIN office AS B ON A.office_bkse = B.id_office
-    INNER JOIN department AS C ON A.dept_bkse = C.id_department
-    INNER JOIN divisi AS D ON A.div_bkse = D.id_divisi
-    INNER JOIN mastercategory AS E ON LEFT(A.pluid_bkse, 6) = E.IDBarang
-    INNER JOIN masterjenis AS F ON RIGHT(A.pluid_bkse, 4) = F.IDJenis
-    LEFT JOIN users AS G ON A.user_bkse = G.nik
-    WHERE A.office_bkse = '$office' AND A.dept_bkse = '$dept' AND A.tgl_bkse BETWEEN '$awal' AND '$akhir' ORDER BY A.tgl_bkse ASC";
-}
-else {
-    $sql = "SELECT A.*, B.id_office, B.office_name, B.office_city, C.id_department, C.department_name, D.divisi_name, E.NamaBarang, F.NamaJenis, G.username AS pic FROM bkse AS A 
-    INNER JOIN office AS B ON A.office_bkse = B.id_office
-    INNER JOIN department AS C ON A.dept_bkse = C.id_department
-    INNER JOIN divisi AS D ON A.div_bkse = D.id_divisi
-    INNER JOIN mastercategory AS E ON LEFT(A.pluid_bkse, 6) = E.IDBarang
-    INNER JOIN masterjenis AS F ON RIGHT(A.pluid_bkse, 4) = F.IDJenis
-    LEFT JOIN users AS G ON A.user_bkse = G.nik
-    WHERE A.office_bkse = '$office' AND A.dept_bkse = '$dept' AND A.tgl_bkse BETWEEN '$awal' AND '$akhir' AND A.pluid_bkse = '$barang' ORDER BY A.tgl_bkse ASC";
-}
+$sql = "SELECT A.*, B.id_office, B.office_name, B.office_city, C.id_department, C.department_name, D.divisi_name, E.NamaBarang, F.NamaJenis, G.username AS pic FROM bkse AS A 
+INNER JOIN office AS B ON A.office_bkse = B.id_office
+INNER JOIN department AS C ON A.dept_bkse = C.id_department
+INNER JOIN divisi AS D ON A.div_bkse = D.id_divisi
+INNER JOIN mastercategory AS E ON LEFT(A.pluid_bkse, 6) = E.IDBarang
+INNER JOIN masterjenis AS F ON RIGHT(A.pluid_bkse, 4) = F.IDJenis
+LEFT JOIN users AS G ON A.user_bkse = G.nik
+WHERE A.office_bkse = '$office' AND A.dept_bkse = '$dept' AND A.tgl_bkse BETWEEN '$awal' AND '$akhir' AND A.pluid_bkse IN ($arrdata) ORDER BY A.tgl_bkse ASC";
 
 $query_h = mysqli_query($conn, $sql);
 $header = mysqli_fetch_assoc($query_h);
