@@ -1,5 +1,5 @@
-db/
-client_secret.json
-files/
-.env
 .vscode/
+db/
+files/
+client_secret.json
+.env

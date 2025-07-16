@@ -71,15 +71,14 @@
                                     </div>
                                     <div class="col-md-12 mb-2">
                                         <label>Nama Barang : </label>
-                                        <select class="select2 form-control" style="width: 100%" type="text" name="barang-cetak" required>
-                                            <option value="ALL" >ALL</option>
+                                        <select class="select2 form-control" data-placeholder="Please Select" multiple="multiple" style="width: 100%" type="text" name="barangcetak[]" required>
                                             <?php 
                                                 $query_plu = mysqli_query($conn, "SELECT A.*, B.IDBarang, B.NamaBarang, C.IDJenis, C.NamaJenis FROM masterstock AS A
                                                 INNER JOIN mastercategory AS B ON LEFT(A.pluid,6) = B.IDBarang 
                                                 INNER JOIN masterjenis AS C ON RIGHT(A.pluid,4) = C.IDJenis 
                                                 WHERE A.ms_id_office = '$office_id' AND ms_id_department = '$dept_id' GROUP BY C.IDJenis ASC");
                                                 while($data_plu = mysqli_fetch_assoc($query_plu)) { ?>
-                                                    <option value="<?= $data_plu['pluid']; ?>"><?= $data_plu['pluid']." - ".$data_plu['NamaBarang']." ".$data_plu['NamaJenis'];?></option>
+                                                    <option value="<?= "'".$data_plu['pluid']."'"; ?>"><?= $data_plu['pluid']." - ".$data_plu['NamaBarang']." ".$data_plu['NamaJenis'];?></option>
                                             <?php 
                                                 }
                                             ?>
