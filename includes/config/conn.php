@@ -26,7 +26,7 @@
     }
 
     // Load .env variables
-    $pathenv = '\.env';
+    $pathenv = '/.env';
     try {
         loadEnv(__DIR__ . $pathenv);
     } catch (Exception $e) {
