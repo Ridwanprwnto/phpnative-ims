@@ -9171,6 +9171,7 @@ function InsertVersiApplication($data) {
     $info = htmlspecialchars($data["info-insversi-app"]);
     $use = htmlspecialchars($data["use-insversi-app"]);
     $idmanual = autoid("0", "6", "manual_ver_app", "version_app");
+    $jenis = htmlspecialchars($data["file-insversi-app"] == "DESKTOP" ? "zip" : "apk");
     
     $querymstr = mysqli_query($conn, "SELECT name_app FROM master_app WHERE code_app = '$name'");
     $datamstr = mysqli_fetch_assoc($querymstr);
@@ -9181,7 +9182,7 @@ function InsertVersiApplication($data) {
     else {
         if ($_FILES['nonweb-insversi-app']['error'] !== 4) {
     
-            $master = UploadMasterApp($name."_".$datamstr["name_app"], $version, $page);
+            $master = UploadMasterApp($name."_".$datamstr["name_app"], $version, $jenis, $page);
     
             if ($master === FALSE) {
                 return FALSE;
@@ -9230,6 +9231,7 @@ function UpdateVersiApplication($data) {
     $info = isset($data["info-upd-verapp"]) ? htmlspecialchars($data["info-upd-verapp"]) : $data["infohide-upd-verapp"];
     $use = isset($data["use-upd-verapp"]) ? htmlspecialchars($data["use-upd-verapp"]) : $data["usehide-upd-verapp"];
     $apl = $data["apl-upd-verapp"];
+    $jenis = htmlspecialchars($data["file-upd-verapp"] == "DESKTOP" ? "zip" : "apk");
 
     if (isset($data["web-upd-verapp"])) {
         $master = strtolower($data["web-upd-verapp"]);
@@ -9238,7 +9240,7 @@ function UpdateVersiApplication($data) {
         $error = isset($_FILES['nonweb-insversi-app']['error']) ? $_FILES['nonweb-insversi-app']['error'] : NULL;
         if ($error !== 4) {
     
-            $master = UploadMasterApp($code."_".$name, $version, $page);
+            $master = UploadMasterApp($code."_".$name, $version, $jenis, $page);
     
             if ($master === FALSE) {
                 return FALSE;
@@ -9279,19 +9281,19 @@ function UpdateVersiApplication($data) {
 // ---------------------------- //
 
 // Function upload master aplikasi
-function UploadMasterApp($source, $version, $page) {
+function UploadMasterApp($source, $version, $jenis, $page) {
 
     $name = isset($_FILES['nonweb-insversi-app']['name']) ? $_FILES['nonweb-insversi-app']['name'] : NULL;
     $size = isset($_FILES['nonweb-insversi-app']['size']) ? $_FILES['nonweb-insversi-app']['size'] : NULL;
     $tmp = isset($_FILES['nonweb-insversi-app']['tmp_name']) ? $_FILES['nonweb-insversi-app']['tmp_name'] : NULL;
 
-    $eksvalid = ["zip"];
+    $eksvalid = [$jenis];
     $eks = explode('.', $name);
     $eks = strtolower(end($eks));
 
     if(!in_array($eks, $eksvalid)) {
 
-        $GLOBALS['alert'] = array("Gagal!", "File yang anda upload bukan format zip", "error", "$page");
+        $GLOBALS['alert'] = array("Gagal!", "File yang anda upload bukan format ".$jenis, "error", "$page");
         return false;
 
     }
