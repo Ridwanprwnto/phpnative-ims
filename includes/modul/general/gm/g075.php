@@ -298,6 +298,7 @@ elseif(isset($_POST["deleteversiapplication"])){
                                                                 <div class="form-row">
                                                                     <input type="hidden" name="page-insversi-app" value="<?= $encpid; ?>" class="form-control" readonly>
                                                                     <input type="hidden" name="user-insversi-app" value="<?= $usernik;?>" class="form-control" readonly>
+                                                                    <input type="hidden" name="file-insversi-app" id="file-insversi-app" class="form-control" readonly>
                                                                     <div class="col-md-12 mb-2">
                                                                         <label>Nama Aplikasi : </label>
                                                                         <select class="select2 form-control block" style="width: 100%" type="text" name="name-insversi-app" id="name-insversi-app" required>
@@ -347,7 +348,7 @@ elseif(isset($_POST["deleteversiapplication"])){
                                                                         <input type="text" name="web-insversi-app" id="web-insversi-app" placeholder="Input Alamat Website Aplikasi" class="form-control" required>
                                                                     </div>
                                                                     <div class="col-md-12 mb-2" id="elmnonweb-insversi-app" style="display:none;">
-                                                                        <label>Master Aplikasi (zip file) : </label>
+                                                                        <label id="jenisfile-insversi-app"></label>
                                                                         <div class="custom-file">
                                                                             <input type="file" class="custom-file-input" name="nonweb-insversi-app" id="nonweb-insversi-app" required>
                                                                             <label class="custom-file-label">Choose file</label>
@@ -479,6 +480,7 @@ elseif(isset($_POST["deleteversiapplication"])){
                                                             <input type="hidden" name="code-upd-verapp" id="code-upd-verapp" class="form-control" readonly>
                                                             <input type="hidden" name="apl-upd-verapp" id="apl-upd-verapp" class="form-control" readonly>
                                                             <input type="hidden" name="mnl-upd-verapp" id="mnl-upd-verapp" class="form-control" readonly>
+                                                            <input type="hidden" name="file-upd-verapp" id="file-upd-verapp" class="form-control" readonly>
                                                             <div class="col-md-6 mb-2">
                                                                 <label>Nama Aplikasi : </label>
                                                                 <input type="text" name="name-upd-verapp" id="name-upd-verapp" class="form-control" readonly>
@@ -518,7 +520,7 @@ elseif(isset($_POST["deleteversiapplication"])){
                                                                 <input type="text" name="web-upd-verapp" id="web-upd-verapp" placeholder="Input Alamat Website Aplikasi" class="form-control" required>
                                                             </div>
                                                             <div class="col-md-12 mb-2" id="elmnonweb-updversi-app" style="display:none;">
-                                                                <label>Master Aplikasi (zip file) : </label>
+                                                                <label id="jenisfile-updversi-app"></label>
                                                                 <div class="custom-file">
                                                                     <input type="file" class="custom-file-input" name="nonweb-insversi-app" id="nonweb-insversi-app">
                                                                     <label class="custom-file-label">Choose file</label>
@@ -657,27 +659,24 @@ $(document).ready(function(){
         var jenis_appname = $(this).val();
         if (jenis_appname.substring(8) == "WEB") {
             $("#elmnonweb-insversi-app").hide();
-
-            $("#web-insversi-app").removeAttr('disabled');
-            $("#web-insversi-app").prop('required', jenis_appname);
-
-            $("#nonweb-insversi-app").removeAttr('required');
-            $("#nonweb-insversi-app").prop('disabled', jenis_appname);
-
+            $("#web-insversi-app").removeAttr('disabled').prop('required', true);
+            $("#nonweb-insversi-app").removeAttr('required').prop('disabled', true);
             $("#elmweb-insversi-app").show();
         }
         else if (jenis_appname.substring(8) == "DESKTOP" || jenis_appname.substring(8) == "MOBILE") {
             $("#elmweb-insversi-app").hide();
-            $("#web-insversi-app").val('');
+            $("#web-insversi-app").val('').removeAttr('required').prop('disabled', true);
             
-            $("#web-insversi-app").removeAttr('required');
-            $("#web-insversi-app").prop('disabled', jenis_appname);
-            
-            $("#nonweb-insversi-app").removeAttr('disabled');
-            $("#nonweb-insversi-app").prop('required', jenis_appname);
+            const fileText = jenis_appname.substring(8) == "DESKTOP" 
+                ? "Master Aplikasi (zip file) : " 
+                : "Master Aplikasi (apk file) : ";
+            $('#jenisfile-insversi-app').text(fileText);
 
+            $('#file-insversi-app').val(jenis_appname.substring(8));
+            
+            $("#nonweb-insversi-app").removeAttr('disabled').prop('required', true);
             $("#elmnonweb-insversi-app").show();
-        }
+        }   
         else {
             $("#elmnonweb-insversi-app").hide();
             $("#elmweb-insversi-app").hide();
@@ -726,6 +725,13 @@ $(document).ready(function(){
                     
                     $("#web-upd-verapp").removeAttr('required');
                     $("#web-upd-verapp").prop('disabled', data.basis_app);
+
+                    const fileText = data.basis_app == "DESKTOP" 
+                        ? "Master Aplikasi (zip file) : " 
+                        : "Master Aplikasi (apk file) : ";
+                    $('#jenisfile-updversi-app').text(fileText);
+                    
+                    $('#file-upd-verapp').val(data.basis_app);
                     
                     $("#nonweb-insversi-app").removeAttr('disabled');
 
