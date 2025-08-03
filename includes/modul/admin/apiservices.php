@@ -128,7 +128,7 @@
                                         <div class="modal-body">
                                             <input type="hidden" class="form-control" id="iddel-masterapi" name="iddel-masterapi" readonly>
                                             <input type="hidden" class="form-control" id="unamedel-masterapi" name="unamedel-masterapi" readonly>
-                                            <label id="labeldel-mastertelebot"></label>
+                                            <label id="labeldel-masterapi"></label>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>

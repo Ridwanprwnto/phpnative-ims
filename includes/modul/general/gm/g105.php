@@ -135,6 +135,7 @@ if(isset($_POST["postingdata"])){
 <script>
 
 var apiUrl = <?= json_encode(GetAPIService('EXPRESS-PG')) ?>;
+var pathService = "/planogroup";
 
 $(document).ready(function(){
 
@@ -158,7 +159,7 @@ $(document).ready(function(){
             "tiperak": tipeRAK
         };
         $.ajax({
-            url: apiUrl+"/auth/zonarak",
+            url: apiUrl+pathService+"/zonarak",
             method: "POST",
             data: JSON.stringify(dataToSend),
             contentType: "application/json",
@@ -197,7 +198,7 @@ $(document).ready(function(){
             "linerak": lineType
         };
         $.ajax({
-            url: apiUrl+"/auth/linerak",
+            url: apiUrl+pathService+"/linerak",
             method: "POST",
             data: JSON.stringify(dataToSend),
             contentType: "application/json",
@@ -235,7 +236,7 @@ $(document).ready(function(){
             "pluid": pluID
         };
         $.ajax({
-            url: apiUrl+"/auth/tablokplano",
+            url: apiUrl+pathService+"/tablokplano",
             method:"POST",
             data: JSON.stringify(dataToSend),
             contentType: "application/json",
