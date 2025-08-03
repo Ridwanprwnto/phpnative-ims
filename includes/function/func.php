@@ -10032,8 +10032,9 @@ function PostingTablokPertemanan($data) {
     ];
 
     $apiUrl = GetAPIService('EXPRESS-PG');
+    $apiPath = "/planogroup";
 
-    $api = $apiUrl.'/auth/grouprak';
+    $api = $apiUrl.$apiPath.'/grouprak';
     
     $context  = stream_context_create($options);
     $result = file_get_contents($api, false, $context);
