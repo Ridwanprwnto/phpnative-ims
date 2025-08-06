@@ -10022,10 +10022,12 @@ function PostingTablokPertemanan($data) {
         'LINEPLA' => $data['line_nearest_group'],
         'RAK_PLA' => $data['rak_nearest_group']
     ];
-    
+
     $options = [
         'http' => [
-            'header'  => "Content-type: application/json\r\n",
+            'header'  => 
+                "Content-type: application/json\r\n" .
+                "apikey: 1234abcd5678efgh\r\n",
             'method'  => 'POST',
             'content' => json_encode($dataPost),
         ],
