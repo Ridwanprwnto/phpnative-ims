@@ -135,7 +135,7 @@ if(isset($_POST["postingdata"])){
 <script>
 
 var apiUrl = <?= json_encode(GetAPIService('EXPRESS-PG')) ?>;
-var pathService = "/planogroup";
+var pathService = "/main/planogroup";
 
 $(document).ready(function(){
 
@@ -163,6 +163,9 @@ $(document).ready(function(){
             method: "POST",
             data: JSON.stringify(dataToSend),
             contentType: "application/json",
+            headers: {
+                apikey: "1234abcd5678efgh"
+            },
             success: function(response) {
                 var $select = $('#table-nearest-group tr:last-child .line_nearest_group');
                 $select.empty();
@@ -201,7 +204,10 @@ $(document).ready(function(){
             url: apiUrl+pathService+"/linerak",
             method: "POST",
             data: JSON.stringify(dataToSend),
-            contentType: "application/json",
+            headers: {
+                apikey: "1234abcd5678efgh"
+            },
+            apikey: "1234abcd5678efgh",
             success: function(response) {
                 // Menggunakan closest untuk menemukan baris yang tepat
                 var $select = $(this).closest('tr').find('.rak_nearest_group[data-rak_nearest_group_id="' + lineTypeID + '"]');
@@ -240,6 +246,9 @@ $(document).ready(function(){
             method:"POST",
             data: JSON.stringify(dataToSend),
             contentType: "application/json",
+            headers: {
+                apikey: "1234abcd5678efgh"
+            },
             success:function(response) {
                 $("#desc-plano").val(response.mbr_full_nama || '');
                 $("#item-plano").val(response.pla_zonabarang || '');
@@ -251,7 +260,7 @@ $(document).ready(function(){
                 $("#cell-plano").val(response.pla_cell || '');
             },
             error: function(xhr, status, error){
-                console.log("Terjadi kesalahan: " + error);
+                console.log("Gagal:", xhr.responseText || error);
                 $("#desc-plano, #item-plano, #tipe-plano, #zona-plano, #line-plano, #rak-plano, #shelf-plano, #cell-plano").val('');
             }
         });
