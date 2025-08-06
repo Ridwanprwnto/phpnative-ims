@@ -136,6 +136,7 @@ if(isset($_POST["postingdata"])){
 
 var apiUrl = <?= json_encode(GetAPIService('EXPRESS-PG')) ?>;
 var pathService = "/main/planogroup";
+var apiKey = "1234abcd5678efgh";
 
 $(document).ready(function(){
 
@@ -164,7 +165,7 @@ $(document).ready(function(){
             data: JSON.stringify(dataToSend),
             contentType: "application/json",
             headers: {
-                apikey: "1234abcd5678efgh"
+                apikey: apiKey
             },
             success: function(response) {
                 var $select = $('#table-nearest-group tr:last-child .line_nearest_group');
@@ -204,10 +205,10 @@ $(document).ready(function(){
             url: apiUrl+pathService+"/linerak",
             method: "POST",
             data: JSON.stringify(dataToSend),
+            contentType: "application/json",
             headers: {
-                apikey: "1234abcd5678efgh"
+                apikey: apiKey
             },
-            apikey: "1234abcd5678efgh",
             success: function(response) {
                 // Menggunakan closest untuk menemukan baris yang tepat
                 var $select = $(this).closest('tr').find('.rak_nearest_group[data-rak_nearest_group_id="' + lineTypeID + '"]');
@@ -247,7 +248,7 @@ $(document).ready(function(){
             data: JSON.stringify(dataToSend),
             contentType: "application/json",
             headers: {
-                apikey: "1234abcd5678efgh"
+                apikey: apiKey
             },
             success:function(response) {
                 $("#desc-plano").val(response.mbr_full_nama || '');
