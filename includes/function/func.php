@@ -10026,7 +10026,7 @@ function PostingTablokPertemanan($data) {
     $options = [
         'http' => [
             'header'  => 
-                "Content-type: application/json\r\n",
+                "Content-type: application/json\r\n".
                 "apikey: 1234abcd5678efgh\r\n",
             'method'  => 'POST',
             'content' => json_encode($dataPost),
@@ -10034,7 +10034,7 @@ function PostingTablokPertemanan($data) {
     ];
 
     $apiUrl = GetAPIService('EXPRESS-PG');
-    $apiPath = "/planogroup";
+    $apiPath = "/main/planogroup";
 
     $api = $apiUrl.$apiPath.'/grouprak';
     
@@ -10042,6 +10042,7 @@ function PostingTablokPertemanan($data) {
     $result = file_get_contents($api, false, $context);
     
     if ($result === FALSE) {
+        var_dump($http_response_header);
         $GLOBALS['alert'] = array("Gagal!", "Error memposting data ke API", "error", "$page");
         return false;
     }
