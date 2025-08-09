@@ -10026,7 +10026,7 @@ function PostingTablokPertemanan($data) {
     $options = [
         'http' => [
             'header'  => 
-                "Content-type: application/json\r\n" .
+                "Content-type: application/json\r\n",
                 "apikey: 1234abcd5678efgh\r\n",
             'method'  => 'POST',
             'content' => json_encode($dataPost),
