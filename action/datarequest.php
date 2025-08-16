@@ -3997,6 +3997,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die(json_encode(encrypt($dataid)));
     }
 
+    if(isset($_POST["OFFICEAPP"]) && !empty($_POST["OFFICEAPP"]) && isset($_POST["DEPTAPP"]) && !empty($_POST["DEPTAPP"]) && isset($_POST["BASEAPP"]) && !empty($_POST["BASEAPP"])){
+
+        $idoffice = mysqli_real_escape_string($conn, $_POST['OFFICEAPP']);
+        $iddept = mysqli_real_escape_string($conn, $_POST['DEPTAPP']);
+        $base = mysqli_real_escape_string($conn, $_POST['BASEAPP']);
+
+        if ($base == "ALL") {
+            $sql = "SELECT code_app, basis_app, name_app FROM master_app WHERE office_app = '$idoffice' AND dept_app = '$iddept' ORDER BY name_app ASC";
+        }
+        else {
+            $sql = "SELECT code_app, basis_app, name_app FROM master_app WHERE office_app = '$idoffice' AND dept_app = '$iddept' AND basis_app = '$base' ORDER BY name_app ASC";
+        }
+        
+        $query = mysqli_query($conn, $sql);
+        
+        //Count total number of rows
+        $rowCount = mysqli_num_rows($query);
+        
+        //Display states list
+        if($rowCount > 0){
+            echo '<option value="ALL">ALL</option>';
+            while($row = mysqli_fetch_assoc($query)){ 
+                echo '<option value="'."'".$row['code_app']."'".'">'.$row['name_app']." (".$row['basis_app'].")".'</option>';
+            }
+        }
+    }
+
 }
 else {
     echo json_encode(['status' => 'error', 'message' => 'Metode tidak diizinkan.']);

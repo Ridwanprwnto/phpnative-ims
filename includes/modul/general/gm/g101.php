@@ -34,7 +34,7 @@
                                     <input class="form-control" type="hidden" name="user-cetak" value="<?= $user;?>">
                                     <div class="col-md-6 mb-2">
                                         <label>Office : </label>
-                                        <select class="select2 form-control block" style="width: 100%" type="text" name="office-cetak" required>
+                                        <select class="select2 form-control block" style="width: 100%" type="text" id="id-office" name="office-cetak" required>
                                             <option value="" selected disabled>Please Select</option>
                                             <?php
                                             $query_off = mysqli_query($conn, "SELECT id_office, office_name FROM office WHERE id_office = '$office_id'");
@@ -49,7 +49,7 @@
                                     <div class="col-md-6 mb-2">
                                         <label>Department : </label>
                                         <select class="select2 form-control block" style="width: 100%"
-                                            type="text" name="dept-cetak" required>
+                                            type="text" id="id-dept" name="dept-cetak" required>
                                             <option value="" selected disabled>Please Select</option>
                                             <?php
                                             $query_dept = mysqli_query($conn, "SELECT * FROM department WHERE id_department = '$dept_id'");
@@ -63,20 +63,17 @@
                                     </div>
                                     <div class="col-md-6 mb-2">
                                         <label>Base : </label>
-                                        <select class="select2 form-control block" data-placeholder="Please Select" multiple="multiple" style="width: 100%" type="text" name="basecetak[]" required>
+                                        <select class="select2 form-control block" style="width: 100%" type="text" id="id-base" name="base-cetak" required>
+                                        <option value="" selected disabled>Please Select</option>
                                             <option value="ALL">ALL</option>
-                                            <option value="'DESKTOP'">DESKTOP</option>
-                                            <option value="'WEB'">WEB</option>
-                                            <option value="'MOBILE'">MOBILE</option>
+                                            <option value="DESKTOP">DESKTOP</option>
+                                            <option value="WEB">WEB</option>
+                                            <option value="MOBILE">MOBILE</option>
                                         </select>
                                     </div>
                                     <div class="col-md-6 mb-2">
-                                        <label>Developer : </label>
-                                        <select class="select2 form-control block" data-placeholder="Please Select" multiple="multiple" style="width: 100%" type="text" name="devcetak[]" required>
-                                            <option value="ALL">ALL</option>
-                                            <option value="'SD3'">SD3</option>
-                                            <option value="'SD5'">SD5</option>
-                                            <option value="'LAIN-LAIN'">LAIN-LAIN</option>
+                                        <label>Application Name : </label>
+                                        <select class="select2 form-control block" data-placeholder="Please Select" multiple="multiple" style="width: 100%" type="text" id="id-app" name="appcetak[]" required>
                                         </select>
                                     </div>
                                     <div class="col-md-12 mb-2">
@@ -100,3 +97,26 @@
     </div>
 </section>
 <!-- // Basic form layout section end -->
+
+
+<script>
+    $(document).ready(function(){
+        $("input[name=office-cetak],select[name=dept-cetak],select[name=base-cetak]").on('change', function(){
+            var office = $('#id-office').val();
+            var dept = $('#id-dept').val();
+            var base = $('#id-base').val();
+            if(office && dept && base) {
+                $.ajax({
+                    type:'POST',
+                    url:'action/datarequest.php',
+                    data: {OFFICEAPP:office, DEPTAPP:dept, BASEAPP:base},
+                    success : function(htmlresponse) {
+                        $('#id-app').html(htmlresponse);
+                    }
+                });
+            } else {
+                $('#id-app').html('<option value="" selected disabled>Please Select</option>');
+            }
+        });
+    });
+</script>
