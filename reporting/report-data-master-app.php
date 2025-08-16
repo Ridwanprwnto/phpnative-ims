@@ -16,68 +16,67 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 $user = mysqli_real_escape_string($conn, $_POST["user-cetak"]);
 $office = mysqli_real_escape_string($conn, $_POST["office-cetak"]);
 $dept = mysqli_real_escape_string($conn, $_POST["dept-cetak"]);
-$base = $_POST["basecetak"];
-$dev = $_POST["devcetak"];
+$base = mysqli_real_escape_string($conn, $_POST["base-cetak"]);
+$app = $_POST["appcetak"];
 $use = $_POST["usecetak"];
-$arrbase = implode(", ", $base);
-$arrdev = implode(", ", $dev);
+$arrapp = implode(", ", $app);
 $arruse = implode(", ", $use);
 
-if ($arrbase == "ALL" && $arrdev == "ALL" && $arruse == "ALL") {
+if ($base == "ALL" && $arrapp == "ALL" && $arruse == "ALL") {
     $sql = "SELECT A.*, B.office_app, B.code_app, B.name_app, B.basis_app, B.peruntukan_app, C.id_office, C.office_name, D.id_department, D.department_name FROM version_app AS A
     INNER JOIN master_app AS B ON A.id_code_app = B.code_app
     INNER JOIN office AS C ON B.office_app = C.id_office 
     INNER JOIN department AS D ON B.dept_app = D.id_department 
     WHERE B.office_app = '$office' AND B.dept_app = '$dept' ORDER BY B.name_app ASC";
 }
-elseif ($arrbase == "ALL" && $arrdev == "ALL" && $arruse != "ALL") {
+elseif ($base == "ALL" && $arrapp == "ALL" && $arruse != "ALL") {
     $sql = "SELECT A.*, B.office_app, B.code_app, B.name_app, B.basis_app, B.peruntukan_app, C.id_office, C.office_name, D.id_department, D.department_name FROM version_app AS A
     INNER JOIN master_app AS B ON A.id_code_app = B.code_app
     INNER JOIN office AS C ON B.office_app = C.id_office 
     INNER JOIN department AS D ON B.dept_app = D.id_department 
     WHERE B.office_app = '$office' AND B.dept_app = '$dept' AND A.use_ver_app IN ($arruse) ORDER BY B.name_app ASC";
 }
-elseif ($arrbase == "ALL" && $arrdev != "ALL" && $arruse != "ALL") {
+elseif ($base == "ALL" && $arrapp != "ALL" && $arruse != "ALL") {
     $sql = "SELECT A.*, B.office_app, B.code_app, B.name_app, B.basis_app, B.peruntukan_app, C.id_office, C.office_name, D.id_department, D.department_name FROM version_app AS A
     INNER JOIN master_app AS B ON A.id_code_app = B.code_app
     INNER JOIN office AS C ON B.office_app = C.id_office 
     INNER JOIN department AS D ON B.dept_app = D.id_department 
-    WHERE B.office_app = '$office' AND B.dept_app = '$dept' AND B.develop_app IN ($arrdev) AND A.use_ver_app IN ($arruse) ORDER BY B.name_app ASC";
+    WHERE B.office_app = '$office' AND B.dept_app = '$dept' AND B.code_app IN ($arrapp) AND A.use_ver_app IN ($arruse) ORDER BY B.name_app ASC";
 }
-elseif ($arrbase != "ALL" && $arrdev != "ALL" && $arruse != "ALL") {
+elseif ($base != "ALL" && $arrapp != "ALL" && $arruse != "ALL") {
     $sql = "SELECT A.*, B.office_app, B.code_app, B.name_app, B.basis_app, B.peruntukan_app, C.id_office, C.office_name, D.id_department, D.department_name FROM version_app AS A
     INNER JOIN master_app AS B ON A.id_code_app = B.code_app
     INNER JOIN office AS C ON B.office_app = C.id_office 
     INNER JOIN department AS D ON B.dept_app = D.id_department 
-    WHERE B.office_app = '$office' AND B.dept_app = '$dept' AND B.basis_app IN ($arrbase) AND B.develop_app IN ($arrdev) AND A.use_ver_app IN ($arruse) ORDER BY B.name_app ASC";
+    WHERE B.office_app = '$office' AND B.dept_app = '$dept' AND B.basis_app = '$base' AND B.code_app IN ($arrapp) AND A.use_ver_app IN ($arruse) ORDER BY B.name_app ASC";
 }
-elseif ($arrbase != "ALL" && $arrdev != "ALL" && $arruse == "ALL") {
+elseif ($base != "ALL" && $arrapp != "ALL" && $arruse == "ALL") {
     $sql = "SELECT A.*, B.office_app, B.code_app, B.name_app, B.basis_app, B.peruntukan_app, C.id_office, C.office_name, D.id_department, D.department_name FROM version_app AS A
     INNER JOIN master_app AS B ON A.id_code_app = B.code_app
     INNER JOIN office AS C ON B.office_app = C.id_office 
     INNER JOIN department AS D ON B.dept_app = D.id_department 
-    WHERE B.office_app = '$office' AND B.dept_app = '$dept' AND B.basis_app IN ($arrbase) AND B.develop_app IN ($arrdev) ORDER BY B.name_app ASC";
+    WHERE B.office_app = '$office' AND B.dept_app = '$dept' AND B.basis_app = '$base' AND B.code_app IN ($arrapp) ORDER BY B.name_app ASC";
 }
-elseif ($arrbase != "ALL" && $arrdev == "ALL" && $arruse == "ALL") {
+elseif ($base != "ALL" && $arrapp == "ALL" && $arruse == "ALL") {
     $sql = "SELECT A.*, B.office_app, B.code_app, B.name_app, B.basis_app, B.peruntukan_app, C.id_office, C.office_name, D.id_department, D.department_name FROM version_app AS A
     INNER JOIN master_app AS B ON A.id_code_app = B.code_app
     INNER JOIN office AS C ON B.office_app = C.id_office 
     INNER JOIN department AS D ON B.dept_app = D.id_department 
-    WHERE B.office_app = '$office' AND B.dept_app = '$dept' AND B.basis_app IN ($arrbase) ORDER BY B.name_app ASC";
+    WHERE B.office_app = '$office' AND B.dept_app = '$dept' AND B.basis_app = '$base' ORDER BY B.name_app ASC";
 }
-elseif ($arrbase != "ALL" && $arrdev == "ALL" && $arruse != "ALL") {
+elseif ($base != "ALL" && $arrapp == "ALL" && $arruse != "ALL") {
     $sql = "SELECT A.*, B.office_app, B.code_app, B.name_app, B.basis_app, B.peruntukan_app, C.id_office, C.office_name, D.id_department, D.department_name FROM version_app AS A
     INNER JOIN master_app AS B ON A.id_code_app = B.code_app
     INNER JOIN office AS C ON B.office_app = C.id_office 
     INNER JOIN department AS D ON B.dept_app = D.id_department 
-    WHERE B.office_app = '$office' AND B.dept_app = '$dept' AND B.basis_app IN ($arrbase) AND A.use_ver_app IN ($arruse) ORDER BY B.name_app ASC";
+    WHERE B.office_app = '$office' AND B.dept_app = '$dept' AND B.basis_app = '$base' AND A.use_ver_app IN ($arruse) ORDER BY B.name_app ASC";
 }
-elseif ($arrbase == "ALL" && $arrdev != "ALL" && $arruse == "ALL") {
+elseif ($base == "ALL" && $arrapp != "ALL" && $arruse == "ALL") {
     $sql = "SELECT A.*, B.office_app, B.code_app, B.name_app, B.basis_app, B.peruntukan_app, C.id_office, C.office_name, D.id_department, D.department_name FROM version_app AS A
     INNER JOIN master_app AS B ON A.id_code_app = B.code_app
     INNER JOIN office AS C ON B.office_app = C.id_office 
     INNER JOIN department AS D ON B.dept_app = D.id_department 
-    WHERE B.office_app = '$office' AND B.dept_app = '$dept' AND B.basis_app IN ($arrbase) ORDER BY B.name_app ASC";
+    WHERE B.office_app = '$office' AND B.dept_app = '$dept' AND B.code_app IN ($arrapp) ORDER BY B.name_app ASC";
 }
 
 $query_h = mysqli_query($conn, $sql);
