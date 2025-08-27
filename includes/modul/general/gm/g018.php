@@ -57,7 +57,6 @@ if(isset($_POST["prosesdataservice"])){
                                                 <input type="hidden" name="modifref-service" value="<?= $arrmodifref[5]; ?>" class="form-control" readonly>
                                                 <input type="hidden" name="user-service" value="<?= $usernik;?>" class="form-control">
                                                 <input type="hidden" name="ofdep-from-service" value="<?= $idoffice.$iddept;?>" class="form-control">
-                                                <input type="hidden" name="kondisi-service" value="<?= $arrcond[3];?>" class="form-control">
                                                 <label>Office : </label>
                                                 <select class="select2 form-control block" style="width: 100%" type="text" name="office-to-service" required>
                                                     <option value="" selected disabled>Please Select</option>

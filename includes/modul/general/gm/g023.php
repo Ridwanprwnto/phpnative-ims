@@ -39,7 +39,7 @@ elseif(isset($_POST["deletedata"])){
     }
 }
 elseif(isset($_POST["deletedatacheck"])){
-    if(CancelBarangCheck($_POST) > 0 ){
+    if(CancelBarangCheck($_POST)){
         $alert = array("Success!", "Pengajuan Perbaikan Barang Berhasil Dibatalkan", "success", "$encpid");
     }
     else {
@@ -271,6 +271,7 @@ $data_servnull = mysqli_fetch_assoc($query_servnull);
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="form-row">
+                                                        <input class="form-control" type="hidden" name="kondisi-brgserv" value="<?= $arrcond[2]; ?>" readonly>
                                                         <label>Are you sure to delete the selected data?</label>
                                                     </div>
                                                 </div>
