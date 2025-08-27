@@ -3143,8 +3143,9 @@ function ProsesBarangService($data) {
     $dept_to = htmlspecialchars(mysqli_real_escape_string($conn, $data["dept-to-service"]));
     $ket_to = htmlspecialchars(mysqli_real_escape_string($conn, strtoupper($data["ket-to-service"])));
     $keperluan = htmlspecialchars($data["keperluan-service"]);
-    $kondisi = htmlspecialchars(mysqli_real_escape_string($conn, $data["kondisi-service"]));
     $tgl = date("Y-m-d H:i:s");
+    
+    $kondisi = $keperluan == "PS" ? "04" : "05";
 
     $ofdep_to = $office_to.$dept_to;
     $office = substr($ofdep_from, 0, 4);
@@ -6889,27 +6890,38 @@ function CancelBarangCheck($data) {
     global $conn;
 
     $idsj = $data["checkidsj"];
-
-    $no = mysqli_real_escape_string($conn, $data["no-brgserv"]);
-    $id = mysqli_real_escape_string($conn, $data["id-brgserv"]);
-
     $kondisi = mysqli_real_escape_string($conn, $data["kondisi-brgserv"]);
-    $pluid = mysqli_real_escape_string($conn, $data["plu-brgserv"]);
-    $snsj = mysqli_real_escape_string($conn, $data["sn-brgserv"]);
-    $at = mysqli_real_escape_string($conn, $data["at-brgserv"]);
     
-    mysqli_query($conn, "UPDATE barang_assets SET kondisi = '$kondisi' WHERE pluid = '$pluid' AND sn_barang = '$snsj' AND no_at = '$at' ");
-
-    $query_head_sj = mysqli_query($conn, "SELECT head_no_sj FROM detail_surat_jalan WHERE head_no_sj = '$no'");
-
-    foreach ($idsthh as $arrdata)  {
-        // Update Data STHH Penerima dan jam masuk
-        $sql = "DELETE FROM sthh WHERE id_sthh = '$idsj'";
-        mysqli_query($conn, $sql);
+    $rows_brg = array();
+    foreach ($idsj as $i)  {
+        $query_barang = mysqli_query($conn, "SELECT from_sj, head_no_sj, pluid_sj, sn_sj, at_sj FROM detail_surat_jalan WHERE detail_no_sj = '$i'");
+        $data_barang = mysqli_fetch_assoc($query_barang);
+        $data = array(
+            $data_barang["head_no_sj"],
+            $data_barang["pluid_sj"],
+            $data_barang["sn_sj"],
+            $data_barang["at_sj"],
+            substr($data_barang["from_sj"], 0, 4),
+            substr($data_barang["from_sj"], 4),
+        );
+        $rows_brg[] = $data;
     }
 
-    if(mysqli_num_rows($query_head_sj) === 0) {
-        mysqli_query($conn, "DELETE FROM surat_jalan WHERE no_sj = '$no'");
+    foreach ($rows_brg as $i => $v) {
+        $rows = $v;
+        mysqli_query($conn, "UPDATE barang_assets SET kondisi = '$kondisi' WHERE ba_id_office = '$rows[4]' AND ba_id_department = '$rows[5]' AND pluid = '$rows[1]' AND sn_barang = '$rows[2]' AND no_at = '$rows[3]'");    
+    }
+
+    foreach ($idsj as $id)  {
+        mysqli_query($conn, "DELETE FROM detail_surat_jalan WHERE detail_no_sj = '$id'");
+    }
+
+    foreach ($rows_brg as $i => $v) {
+        $rows = $v;
+        $query_head_sj = mysqli_query($conn, "SELECT head_no_sj FROM detail_surat_jalan WHERE head_no_sj = '$rows[0]'");
+        if(mysqli_num_rows($query_head_sj) === 0) {
+            mysqli_query($conn, "DELETE FROM surat_jalan WHERE no_sj = '$rows[0]'");
+        }
     }
 
     return mysqli_affected_rows($conn);
