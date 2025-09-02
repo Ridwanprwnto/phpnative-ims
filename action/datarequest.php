@@ -3997,6 +3997,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die(json_encode(encrypt($dataid)));
     }
 
+    if(isset($_POST["PRINTMUTASI"]) && !empty($_POST["PRINTMUTASI"])){
+
+        $dataid = mysqli_real_escape_string($conn, $_POST['PRINTMUTASI']);
+        
+        session_start();
+
+        if(!isset($_SESSION[$dataid])) {
+            $_SESSION[$dataid] = $_POST;
+        }
+
+        die(json_encode(encrypt($dataid)));
+    }
+
     if(isset($_POST["OFFICEAPP"]) && !empty($_POST["OFFICEAPP"]) && isset($_POST["DEPTAPP"]) && !empty($_POST["DEPTAPP"]) && isset($_POST["BASEAPP"]) && !empty($_POST["BASEAPP"])){
 
         $idoffice = mysqli_real_escape_string($conn, $_POST['OFFICEAPP']);
@@ -4022,6 +4035,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo '<option value="'."'".$row['code_app']."'".'">'.$row['name_app']." (".$row['basis_app'].")".'</option>';
             }
         }
+    }
+
+    if(isset($_POST["ACTIONDETAILMONITORMUTASI"]) && !empty($_POST["ACTIONDETAILMONITORMUTASI"])){
+
+        $dataid = $_POST['ACTIONDETAILMONITORMUTASI'];
+
+        $sql = "SELECT A.merk_mutasi AS MERK_MUTASI, A.tipe_mutasi AS TIPE_MUTASI, A.sn_mutasi AS SN_MUTASI, A.at_mutasi AS DAT_MUTASI, CONCAT(A.pluid_mutasi, ' - ', B.NamaBarang, ' ', C.NamaJenis) AS PLUID_MUTASI, A.status_mutasi AS STATUS_MUTASI FROM detail_mutasi AS A
+        INNER JOIN mastercategory AS B ON LEFT(A.pluid_mutasi, 6) = B.IDBarang
+        INNER JOIN masterjenis AS C ON RIGHT(A.pluid_mutasi, 4) = C.IDJenis
+        WHERE A.head_no_mutasi = '$dataid'";
+
+        $query = mysqli_query($conn, $sql);
+
+        $row = array();
+        if ($query) {
+            while($result = mysqli_fetch_assoc($query)) {
+                $result = array(
+                    "PLUID_MUTASI"=>$result["PLUID_MUTASI"],
+                    "MERK_MUTASI"=>$result["MERK_MUTASI"],
+                    "TIPE_MUTASI"=>$result["TIPE_MUTASI"],
+                    "SN_MUTASI"=>$result["SN_MUTASI"],
+                    "DAT_MUTASI"=>$result["DAT_MUTASI"],
+                    "STATUS_MUTASI"=>$result["STATUS_MUTASI"],
+                );
+                $row[] = $result;
+            }
+            die(json_encode(array(
+                "data"=>$row
+            )));
+        }
+
     }
 
 }
