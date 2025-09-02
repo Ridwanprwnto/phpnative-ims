@@ -108,7 +108,7 @@ if(isset($_POST["insertdata"])){
                             <select class="select2 form-control block" style="width: 100%" type="text" name="user-cek" required>
                             <option value="" selected disabled>Please Select</option>
                                 <?php
-                                    $query_users = mysqli_query($conn, "SELECT nik, username FROM users WHERE id_group NOT LIKE '$arrgroup[0]' ORDER BY username ASC");
+                                    $query_users = mysqli_query($conn, "SELECT nik, username FROM users WHERE id_office = '$idoffice' AND id_group NOT LIKE '$arrgroup[0]' ORDER BY username ASC");
                                     while($data_users = mysqli_fetch_assoc($query_users)) { ?>
                                         <option value="<?= $data_users['nik'];?>"><?= $data_users['nik'].' - '.strtoupper($data_users['username']);?>
                                         </option>
