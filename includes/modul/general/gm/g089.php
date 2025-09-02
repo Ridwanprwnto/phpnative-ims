@@ -52,7 +52,7 @@
                                     <tbody>
                                         <?php
                                             $no = 1;
-                                            $sql = "SELECT * FROM reset_pass WHERE status_reset = 'N'";
+                                            $sql = "SELECT * FROM reset_pass WHERE office_reset = '$office_id' AND status_reset = 'N'";
                                             $query = mysqli_query($conn, $sql);
                                             while ($data = mysqli_fetch_assoc($query)) {
                                         ?>
