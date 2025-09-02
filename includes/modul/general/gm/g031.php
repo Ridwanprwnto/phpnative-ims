@@ -174,7 +174,7 @@ $(document).ready(function() {
         }
     } );
 
-    $('.row-grouping-monservice tbody').on( 'click', 'tr.group', function () {
+    $('.row-grouping-mutasi tbody').on( 'click', 'tr.group', function () {
         if (typeof table !== 'undefined' && table.order()[0]) {
             var currentOrder = table.order()[0];
             if ( currentOrder[0] === 1 && currentOrder[1] === 'asc' ) {
