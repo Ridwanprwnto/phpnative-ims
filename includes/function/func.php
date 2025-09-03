@@ -3248,7 +3248,7 @@ function InsertKKSO($data) {
             $saldo = $data_saldo["saldo_akhir"];
         }
 
-        $saldo = isset($saldo) ? $saldo : NULL;
+        $saldo = isset($saldo) ? $saldo : 0;
 
         $query_asset = mysqli_query($conn, "SELECT pluid, sn_barang, no_at FROM barang_assets WHERE LEFT(dat_asset, 4) = '$office' AND RIGHT(dat_asset, 4) = '$dept' AND pluid = '$pluid_cek' AND kondisi != '$kondisi'");
         
@@ -3438,7 +3438,16 @@ function AdjustLHSO($data) {
             $result_update[] = $arrso;
         }
 
-        mysqli_query($conn, "UPDATE masterstock SET saldo_akhir = '$fisik' WHERE ms_id_office = '$office' AND ms_id_department = '$dept' AND pluid = '$pluid'");
+        $sql_ms = "SELECT saldo_akhir FROM masterstock WHERE ms_id_office = '$office' AND ms_id_department = '$dept' AND pluid = '$pluid'";
+        $query_ms = mysqli_query($conn, $sql_ms);
+        $result_ms = mysqli_fetch_assoc($query_ms);
+        
+        if($result_ms) {
+            mysqli_query($conn, "UPDATE masterstock SET saldo_akhir = '$fisik' WHERE ms_id_office = '$office' AND ms_id_department = '$dept' AND pluid = '$pluid'");
+        }
+        else {
+            mysqli_query($conn, "INSERT INTO masterstock (ms_id_office, ms_id_department, pluid, saldo_akhir) VALUES ('$office', '$dept', '$pluid', '$fisik')");
+        }
 
         mysqli_query($conn, "DELETE FROM asset_stock_opname WHERE noref_so_asset = '$no_so' AND pluid_so_asset = '$pluid'");
     }

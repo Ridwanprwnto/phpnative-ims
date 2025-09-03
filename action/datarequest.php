@@ -2104,11 +2104,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $id = $_POST['DETAILDATASO'];
 
-        $sql = "SELECT A.*, B.*, C.IDJenis, C.NamaJenis, D.nama_satuan, E.saldo_awal, E.saldo_akhir, COUNT(F.pluid_so_asset) AS total FROM detail_stock_opname AS A 
+        $sql = "SELECT A.*, B.*, C.IDJenis, C.NamaJenis, D.nama_satuan, COUNT(F.pluid_so_asset) AS total FROM detail_stock_opname AS A 
         INNER JOIN mastercategory AS B ON LEFT(A.pluid_so, 6) = B.IDBarang
         INNER JOIN masterjenis AS C ON RIGHT(A.pluid_so, 4) = C.IDJenis
         INNER JOIN satuan AS D ON B.id_satuan = D.id_satuan
-        INNER JOIN masterstock AS E ON A.pluid_so = E.pluid
         INNER JOIN asset_stock_opname AS F ON A.pluid_so = F.pluid_so_asset
         WHERE A.no_so_head = '$id' GROUP BY A.pluid_so ";
 
@@ -2145,7 +2144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <td><?= $data_detail['pluid_so'];?></td>
                             <td><?= $data_detail['NamaBarang']." ".$data_detail['NamaJenis'];?></td>
                             <td><?= $data_detail['nama_satuan'];?></td>
-                            <td><?= $stock = $data_detail['saldo_akhir'];?></td>
+                            <td><?= $stock = $data_detail['saldo_so']; ?></td>
                             <td><?= $asset = $data_detail['total'];?></td>
                             <td><?= $fisik = $data_detail['fisik_so'] == NULL ? 0 : $data_detail['fisik_so'];?></td>
                             <td><?= $selisih_stock = ($fisik - $stock);?></td>
