@@ -90,9 +90,8 @@
                                         </select>
                                     </div>
                                 </div>
-                                <button type="submit" name="submit" class="btn btn-primary mt-1">
-                                    <i class="ft-printer"></i> Report Data
-                                </button>
+                                <button type="submit" name="printpdf" class="btn btn-primary mt-1"><i class="ft-printer"></i> Print Pdf </button>
+                                <button type="submit" name="printexcell" class="btn btn-primary mt-1"> <i class="ft-printer"></i> Print Excell </button>
                             </form>
                             </div>
                         </div>
