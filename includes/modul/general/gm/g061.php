@@ -63,7 +63,7 @@
                                     </div>
                                     <div class="col-md-12 mb-2">
                                         <label>Nama Barang : </label>
-                                        <select class="select2 form-control" multiple="multiple" style="width: 100%" type="text" name="barangcetak[]" required>
+                                        <select class="select2 form-control" multiple="multiple" data-placeholder="Please Select" style="width: 100%" type="text" name="barangcetak[]" required>
                                             <option value="ALL" >ALL</option>
                                             <?php 
                                                 $query_plu = mysqli_query($conn, "SELECT A.*, B.IDBarang, B.NamaBarang, C.IDJenis, C.NamaJenis FROM masterstock AS A
@@ -81,9 +81,8 @@
                                         </select>
                                     </div>
                                 </div>
-                                <button type="submit" name="submit" class="btn btn-primary mt-1">
-                                    <i class="ft-printer"></i> Report Data
-                                </button>
+                                <button type="submit" name="printpdf" class="btn btn-primary mt-1"> <i class="ft-printer"></i> Print Pdf </button>
+                                <button type="submit" name="printexcell" class="btn btn-primary mt-1"> <i class="ft-printer"></i> Print Excell </button>
                             </form>
                             </div>
                         </div>

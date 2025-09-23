@@ -52,7 +52,6 @@ elseif(isset($_POST["deleteversiapplication"])){
         <div class="navbar-wrapper">
             <div class="navbar-header">
                 <ul class="nav navbar-nav flex-row">
-                    <li class="nav-item mobile-menu d-md-none mr-auto"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="ft-menu font-large-1"></i></a></li>
                     <li class="nav-item">
                         <a class="navbar-brand" href="<?= $page; ?>">
                         <img class="brand-logo" alt="IMS Logo" src="app-assets/images/logo/logo.png">
@@ -81,13 +80,12 @@ elseif(isset($_POST["deleteversiapplication"])){
             <div class="content-body">
                 <section class="box-shadow-2">
                     <div class="card border-grey border-lighten-3 px-2 my-0 row">
-                        <div class="card-header no-border pb-1">
-                            <div class="card-body">
-                                <!-- <h6 class="error-code text-center mb-2">MANAGEMENT APPLICATION</h3> -->
-                                <h2 class="text-uppercase text-center">Management Application</h2>
-                            </div>
-                        </div>
                         <div class="card-content px-2">
+                            <div class="form-header no-border pb-1">
+                                <div class="card-body">
+                                    <h2 class="text-uppercase text-center">Management Application</h2>
+                                </div>
+                            </div>
                             <div class="form-body">
                                 <h4 class="form-section">List Master Application</h4>
                                 <div class="row">
@@ -179,102 +177,102 @@ elseif(isset($_POST["deleteversiapplication"])){
                                             }
                                         ?>
                                         </tbody>
-                                        <!-- Update Modal -->
-                                        <div class="modal fade text-left" id="updateModalVersionApp" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg" role="document">
-                                                <div class="modal-content">
-                                                    <form action="" method="post" enctype="multipart/form-data" role="form">
-                                                        <div class="modal-header bg-primary white">
-                                                            <h4 class="modal-title white" id="label-upd-verapp"></h4>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <div class="form-row">
-                                                                <input type="hidden" name="page-upd-verapp" value="<?= $page; ?>" class="form-control" readonly>
-                                                                <input type="hidden" name="user-upd-verapp" value="" class="form-control" readonly>
-                                                                <input type="hidden" name="id-upd-verapp" id="id-upd-verapp" class="form-control" readonly>
-                                                                <input type="hidden" name="code-upd-verapp" id="code-upd-verapp" class="form-control" readonly>
-                                                                <input type="hidden" name="apl-upd-verapp" id="apl-upd-verapp" class="form-control" readonly>
-                                                                <input type="hidden" name="mnl-upd-verapp" id="mnl-upd-verapp" class="form-control" readonly>
-                                                                <input type="hidden" name="infohide-upd-verapp" id="infohide-upd-verapp" class="form-control" readonly>
-                                                                <input type="hidden" name="usehide-upd-verapp" id="usehide-upd-verapp" class="form-control" readonly>
-                                                                <div class="col-md-6 mb-2">
-                                                                    <label>Nama Aplikasi : </label>
-                                                                    <input type="text" name="name-upd-verapp" id="name-upd-verapp" class="form-control" readonly>
-                                                                </div>
-                                                                <div class="col-md-6 mb-2">
-                                                                    <label>Versi : </label>
-                                                                    <input type="text" name="versi-upd-verapp" id="versi-upd-verapp" placeholder="Input Versi Aplikasi" class="form-control" required>
-                                                                </div>
-                                                                <div class="col-md-12 mb-2">
-                                                                    <label>Tanggal Rilis : </label>
-                                                                    <input type="date" name="rilis-upd-verapp" id="rilis-upd-verapp" class="form-control" required>
-                                                                </div>
-                                                                <div class="col-md-12 mb-2">
-                                                                    <label>Fitur Update :</label>
-                                                                    <textarea type="text" class="form-control" name="fitur-upd-verapp" id="fitur-upd-verapp" placeholder="Input Update Fitur (Optional)"></textarea>
-                                                                </div>
-                                                                <div class="col-md-12 mb-2" id="elmweb-updversi-app" style="display:none;">
-                                                                    <label>Website Aplikasi : </label>
-                                                                    <input type="text" name="web-upd-verapp" id="web-upd-verapp" placeholder="Input Alamat Website Aplikasi" class="form-control" required>
-                                                                </div>
-                                                                <div class="col-md-12 mb-2" id="elmnonweb-updversi-app" style="display:none;">
-                                                                    <label>Master Aplikasi (zip file) : </label>
-                                                                    <div class="custom-file">
-                                                                        <input type="file" class="custom-file-input" name="nonweb-insversi-app" id="nonweb-insversi-app">
-                                                                        <label class="custom-file-label">Choose file</label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-12 mb-2">
-                                                                    <label>User Manual (pdf or pptx file) : </label>
-                                                                    <div class="custom-file">
-                                                                        <input type="file" class="custom-file-input" name="manual-insversi-app">
-                                                                        <label class="custom-file-label">Choose file</label>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
-                                                            <button type="submit" name="updateversiapplication" class="btn btn-outline-primary">Update</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <!-- End Modal -->
-                                        <!-- Modal Delete -->
-                                        <div class="modal fade text-left" id="deleteModalVersionApp" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                            <form message="" method="post">
-                                                <div class="modal-content">
-                                                    <div class="modal-header bg-danger white">
-                                                        <h4 class="modal-title white">Delete Confirmation</h4>
+                                    </table>
+                                    <!-- Update Modal -->
+                                    <div class="modal fade text-left" id="updateModalVersionApp" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg" role="document">
+                                            <div class="modal-content">
+                                                <form action="" method="post" enctype="multipart/form-data" role="form">
+                                                    <div class="modal-header bg-primary white">
+                                                        <h4 class="modal-title white" id="label-upd-verapp"></h4>
                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <input type="hidden" name="page-del-verapp" value="<?= $page; ?>" class="form-control" readonly>
-                                                        <input type="hidden" id="id-del-verapp" name="id-del-verapp" class="form-control" readonly>
-                                                        <input type="hidden" id="code-del-verapp" name="code-del-verapp" class="form-control" readonly>
-                                                        <input type="hidden" id="name-del-verapp" name="name-del-verapp" class="form-control" readonly>
-                                                        <input type="hidden" id="source-del-verapp" name="source-del-verapp" class="form-control" readonly>
-                                                        <input type="hidden" id="manual-del-verapp" name="manual-del-verapp" class="form-control" readonly>
-                                                        <label id="label-del-verapp"></label>
+                                                        <div class="form-row">
+                                                            <input type="hidden" name="page-upd-verapp" value="<?= $page; ?>" class="form-control" readonly>
+                                                            <input type="hidden" name="user-upd-verapp" value="" class="form-control" readonly>
+                                                            <input type="hidden" name="id-upd-verapp" id="id-upd-verapp" class="form-control" readonly>
+                                                            <input type="hidden" name="code-upd-verapp" id="code-upd-verapp" class="form-control" readonly>
+                                                            <input type="hidden" name="apl-upd-verapp" id="apl-upd-verapp" class="form-control" readonly>
+                                                            <input type="hidden" name="mnl-upd-verapp" id="mnl-upd-verapp" class="form-control" readonly>
+                                                            <input type="hidden" name="infohide-upd-verapp" id="infohide-upd-verapp" class="form-control" readonly>
+                                                            <input type="hidden" name="usehide-upd-verapp" id="usehide-upd-verapp" class="form-control" readonly>
+                                                            <div class="col-md-6 mb-2">
+                                                                <label>Nama Aplikasi : </label>
+                                                                <input type="text" name="name-upd-verapp" id="name-upd-verapp" class="form-control" readonly>
+                                                            </div>
+                                                            <div class="col-md-6 mb-2">
+                                                                <label>Versi : </label>
+                                                                <input type="text" name="versi-upd-verapp" id="versi-upd-verapp" placeholder="Input Versi Aplikasi" class="form-control" required>
+                                                            </div>
+                                                            <div class="col-md-12 mb-2">
+                                                                <label>Tanggal Rilis : </label>
+                                                                <input type="date" name="rilis-upd-verapp" id="rilis-upd-verapp" class="form-control" required>
+                                                            </div>
+                                                            <div class="col-md-12 mb-2">
+                                                                <label>Fitur Update :</label>
+                                                                <textarea type="text" class="form-control" name="fitur-upd-verapp" id="fitur-upd-verapp" placeholder="Input Update Fitur (Optional)"></textarea>
+                                                            </div>
+                                                            <div class="col-md-12 mb-2" id="elmweb-updversi-app" style="display:none;">
+                                                                <label>Website Aplikasi : </label>
+                                                                <input type="text" name="web-upd-verapp" id="web-upd-verapp" placeholder="Input Alamat Website Aplikasi" class="form-control" required>
+                                                            </div>
+                                                            <div class="col-md-12 mb-2" id="elmnonweb-updversi-app" style="display:none;">
+                                                                <label>Master Aplikasi (zip file) : </label>
+                                                                <div class="custom-file">
+                                                                    <input type="file" class="custom-file-input" name="nonweb-insversi-app" id="nonweb-insversi-app">
+                                                                    <label class="custom-file-label">Choose file</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-12 mb-2">
+                                                                <label>User Manual (pdf or pptx file) : </label>
+                                                                <div class="custom-file">
+                                                                    <input type="file" class="custom-file-input" name="manual-insversi-app">
+                                                                    <label class="custom-file-label">Choose file</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
-                                                        <button type="submit" name="deleteversiapplication" class="btn btn-outline-danger">Yes</button>
+                                                        <button type="submit" name="updateversiapplication" class="btn btn-outline-primary">Update</button>
                                                     </div>
-                                                </div>
-                                            </form>
+                                                </form>
                                             </div>
                                         </div>
-                                        <!-- End Modal -->
-                                    </table>
+                                    </div>
+                                    <!-- End Modal -->
+                                    <!-- Modal Delete -->
+                                    <div class="modal fade text-left" id="deleteModalVersionApp" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                        <form message="" method="post">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-danger white">
+                                                    <h4 class="modal-title white">Delete Confirmation</h4>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <input type="hidden" name="page-del-verapp" value="<?= $page; ?>" class="form-control" readonly>
+                                                    <input type="hidden" id="id-del-verapp" name="id-del-verapp" class="form-control" readonly>
+                                                    <input type="hidden" id="code-del-verapp" name="code-del-verapp" class="form-control" readonly>
+                                                    <input type="hidden" id="name-del-verapp" name="name-del-verapp" class="form-control" readonly>
+                                                    <input type="hidden" id="source-del-verapp" name="source-del-verapp" class="form-control" readonly>
+                                                    <input type="hidden" id="manual-del-verapp" name="manual-del-verapp" class="form-control" readonly>
+                                                    <label id="label-del-verapp"></label>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
+                                                    <button type="submit" name="deleteversiapplication" class="btn btn-outline-danger">Yes</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        </div>
+                                    </div>
+                                    <!-- End Modal -->
                                 </div>
                             </div>
                         </div>

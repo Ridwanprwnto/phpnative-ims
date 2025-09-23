@@ -1,5 +1,11 @@
 <?php
 
+/*call the EXCELL library*/
+require '../vendor/autoload.php';
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 require '../includes/config/timezone.php';
 require '../includes/function/func.php';
 require '../includes/config/conn.php';
@@ -35,107 +41,180 @@ else {
 $result = mysqli_query($conn, $sql);
 $header = mysqli_fetch_assoc($result);
 
-class PDF extends FPDF
-{
-    // Page header
-    function Header()
+
+if (isset($_POST["printpdf"])) {
+
+    class PDF extends FPDF
     {
-        global $header;
-        global $user;
+        // Page header
+        function Header()
+        {
+            global $header;
+            global $user;
 
-        $this->SetFont('Arial','',10);
+            $this->SetFont('Arial','',10);
 
-        $this->Cell(28 ,5,'Office',0,0);
-        $this->Cell(48 ,5,': '.$header['id_office']." - ".$header['office_name'],0,0);
-        $this->Cell(38 ,5,'',0,0);
-        $this->Cell(28 ,5,'Print Date',0,0);
-        $this->Cell(48 ,5,': '.date("d-m-Y H:i:s"), 0, 1);
+            $this->Cell(28 ,5,'Office',0,0);
+            $this->Cell(48 ,5,': '.$header['id_office']." - ".$header['office_name'],0,0);
+            $this->Cell(38 ,5,'',0,0);
+            $this->Cell(28 ,5,'Print Date',0,0);
+            $this->Cell(48 ,5,': '.date("d-m-Y H:i:s"), 0, 1);
+            
+            $this->Cell(28 ,5,'Department',0,0);
+            $this->Cell(48 ,5,': '.$header['department_name'],0,0);
+            $this->Cell(38 ,5,'',0,0);
+            $this->Cell(28 ,5,'User',0,0);
+            $this->Cell(48 ,5,': '.$user, 0, 1);
+            
+            $this->Ln(5);
+            
+            $this->SetFont('Arial','B',14);
+            
+            $this->Cell(190, 10, 'LAPORAN SALDO AKHIR BARANG', 0, 1, 'C');
+            
+            $this->SetFont('Arial','',10);
+            
+            $this->Ln(3);
+            
+            $this->SetFont('Arial','B',8);
+            /*Heading Of the table*/
+            $this->Cell(12 ,10,'No',1,0,'C');
+            $this->Cell(26 ,10,'Kode Barang',1,0,'C');
+            $this->Cell(107 ,10,'Nama Barang',1,0,'C');
+            $this->Cell(20 ,10,'Satuan',1,0,'C');
+            $this->Cell(25 ,10,'Saldo Akhir',1,1,'C');
+            /*end of line*/
         
-        $this->Cell(28 ,5,'Department',0,0);
-        $this->Cell(48 ,5,': '.$header['department_name'],0,0);
-        $this->Cell(38 ,5,'',0,0);
-        $this->Cell(28 ,5,'User',0,0);
-        $this->Cell(48 ,5,': '.$user, 0, 1);
-        
-        $this->Ln(5);
-        
-        $this->SetFont('Arial','B',14);
-        
-        $this->Cell(190, 10, 'LAPORAN SALDO AKHIR BARANG', 0, 1, 'C');
-        
-        $this->SetFont('Arial','',10);
-        
-        $this->Ln(3);
-        
-        $this->SetFont('Arial','B',8);
-        /*Heading Of the table*/
-        $this->Cell(12 ,10,'No',1,0,'C');
-        $this->Cell(26 ,10,'Kode Barang',1,0,'C');
-        $this->Cell(107 ,10,'Nama Barang',1,0,'C');
-        $this->Cell(20 ,10,'Satuan',1,0,'C');
-        $this->Cell(25 ,10,'Saldo Akhir',1,1,'C');
-        /*end of line*/
-       
+        }
+
+        // Page footer
+        function Footer()
+        {
+            // Position at 1.5 cm from bottom
+            $this->SetY(-15);
+            // Arial italic 8
+            $this->SetFont('Arial','I',8);
+            // Page number
+            $this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
+        }
     }
 
-    // Page footer
-    function Footer()
-    {
-        // Position at 1.5 cm from bottom
-        $this->SetY(-15);
-        // Arial italic 8
-        $this->SetFont('Arial','I',8);
-        // Page number
-        $this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
-    }
-}
+    /*A4 width : 219mm*/
+    $pdf = new PDF('P','mm','A4');
+    $pdf->AliasNbPages();
+    $pdf->AddPage();
 
-/*A4 width : 219mm*/
-$pdf = new PDF('P','mm','A4');
-$pdf->AliasNbPages();
-$pdf->AddPage();
+    $pdf->SetAuthor('Inventory Management System');
+    $pdf->SetTitle('Report Data Saldo Akhir Barang');
+    $pdf->SetSubject('Saldo Akhir Barang');
+    $pdf->SetKeywords('SALDO');
+    $pdf->SetCreator('IMS');
 
-$pdf->SetAuthor('Inventory Management System');
-$pdf->SetTitle('Report Data Saldo Akhir Barang');
-$pdf->SetSubject('Saldo Akhir Barang');
-$pdf->SetKeywords('SALDO');
-$pdf->SetCreator('IMS');
+    $pdf->SetFont('Arial','',8);
 
-$pdf->SetFont('Arial','',8);
+    $no = 1;
+    if (isset($office) && isset($dept) && isset($barang) && isset($user)) {
 
-$no = 1;
-if (isset($office) && isset($dept) && isset($barang) && isset($user)) {
+        $query = mysqli_query($conn, $sql);
+        if(mysqli_num_rows($query) > 0 ) {
+            while($data = mysqli_fetch_array($query)){
 
-    $query = mysqli_query($conn, $sql);
-    if(mysqli_num_rows($query) > 0 ) {
-        while($data = mysqli_fetch_array($query)){
+                $kode = $data['pluid'];
+                $desc = $data['NamaBarang']." ".$data['NamaJenis'];
+                $satuan = $data['nama_satuan'];
+                $saldo = $data['saldo_akhir'];
 
-            $kode = $data['pluid'];
-            $desc = $data['NamaBarang']." ".$data['NamaJenis'];
-            $satuan = $data['nama_satuan'];
-            $saldo = $data['saldo_akhir'];
+                $pdf->Cell(12 ,6 ,$no++,1,0,'C');
+                $pdf->Cell(26 ,6 ,$kode,1,0,'C');
+                $pdf->Cell(107 ,6 ,$desc,1,0,'C');
+                $pdf->Cell(20 ,6 ,$satuan,1,0,'C');
+                $pdf->Cell(25 ,6 ,$saldo,1,1,'C');
 
-            $pdf->Cell(12 ,6 ,$no++,1,0,'C');
-            $pdf->Cell(26 ,6 ,$kode,1,0,'C');
-            $pdf->Cell(107 ,6 ,$desc,1,0,'C');
-            $pdf->Cell(20 ,6 ,$satuan,1,0,'C');
-            $pdf->Cell(25 ,6 ,$saldo,1,1,'C');
-
+            }
+        }
+        else {
+            $msg = encrypt("datanotfound");
+            header("location: ../error.php?alert=$msg");
+            exit();
         }
     }
     else {
-        $msg = encrypt("datanotfound");
+        $msg = encrypt("print-error");
         header("location: ../error.php?alert=$msg");
         exit();
     }
-}
-else {
-    $msg = encrypt("print-error");
-    header("location: ../error.php?alert=$msg");
-    exit();
-}
 
-// Nama file ketika di print
-$pdf->Output("LAPORAN SALDO AKHIR BARANG-".".pdf","I");
+    // Nama file ketika di print
+    $pdf->Output("LAPORAN SALDO AKHIR BARANG-".".pdf","I");
 
+}
+elseif (isset($_POST["printexcell"])) {
+
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    $title = "LAPORAN SALDO AKHIR BARANG";
+
+    // sheet peratama
+    $sheet->setTitle($title);
+
+    $sheet->getStyle('A1:E1')->getFont()->setBold(true);
+
+    $sheet->setCellValue('A1', 'NO');
+    $sheet->setCellValue('B1', 'KODE BARANG');
+    $sheet->setCellValue('C1', 'NAMA BARANG');
+    $sheet->setCellValue('D1', 'SATUAN');
+    $sheet->setCellValue('E1', 'SALDO AKHIR');
+
+    $row_xcl = 2;
+    $no = 1;
+
+    if (isset($office) && isset($dept) && isset($barang) && isset($user)) {
+        
+        $query = mysqli_query($conn, $sql);
+        if(mysqli_num_rows($query) > 0 ) {
+
+            while($data = mysqli_fetch_assoc($query)){
+
+                $sheet->setCellValue('A'.$row_xcl, $no++);
+                $sheet->setCellValue('B'.$row_xcl, $data['pluid']);
+                $sheet->setCellValue('C'.$row_xcl, $data['NamaBarang']." ".$data['NamaJenis']);
+                $sheet->setCellValue('D'.$row_xcl, $data["nama_satuan"]);
+                $sheet->setCellValue('E'.$row_xcl, $data["saldo_akhir"]);
+                $row_xcl++;
+                    
+            }
+        }
+        else {
+            $msg = encrypt("datanotfound");
+            header("location: ../error.php?alert=$msg");
+            exit();
+        }
+    }
+    else {
+        $msg = encrypt("print-error");
+        header("location: ../error.php?alert=$msg");
+        exit();
+    }
+
+    // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+    $spreadsheet->setActiveSheetIndex(0);
+
+    // Redirect output to a client’s web browser (Xlsx)
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename='.$title.'.xlsx');
+    header('Cache-Control: max-age=0');
+    // If you're serving to IE 9, then the following may be needed
+    header('Cache-Control: max-age=1');
+    
+    // If you're serving to IE over SSL, then the following may be needed
+    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+    header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+    header('Pragma: public'); // HTTP/1.0
+
+    $writer = new Xlsx($spreadsheet);
+    $writer->save('php://output');
+
+}
 ?>
