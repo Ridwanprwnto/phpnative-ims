@@ -1289,16 +1289,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     }
 
-    if(isset($_POST["IDSO"]) && !empty($_POST["IDSO"]) && isset($_POST["FISIKSO"]) && !empty($_POST["FISIKSO"]) && isset($_POST["KETSO"]) && !empty($_POST["KETSO"])){
+    if(isset($_POST["IDSO"]) && !empty(trim($_POST["IDSO"])) && isset($_POST["FISIKSO"]) && $_POST["FISIKSO"] !== '' && isset($_POST["KETSO"]) && !empty(trim($_POST["KETSO"]))){
 
-        $id = mysqli_real_escape_string($conn, $_POST['IDSO']);
-        $fisik = mysqli_real_escape_string($conn, $_POST['FISIKSO']);
-        $ket = mysqli_real_escape_string($conn, strtoupper($_POST['KETSO']));
+        $id = mysqli_real_escape_string($conn, trim($_POST['IDSO']));
+        $fisik = (float) $_POST['FISIKSO'];
+        $ket = mysqli_real_escape_string($conn, strtoupper(trim($_POST['KETSO'])));
 
-        // Update to database
-        mysqli_query($conn, "UPDATE detail_stock_opname SET fisik_so = '$fisik', keterangan_so = '$ket' WHERE no_so_detail = '$id'");
+        // Query UPDATE
+        $query = "UPDATE detail_stock_opname SET fisik_so = $fisik, keterangan_so = '$ket' WHERE no_so_detail = '$id'";
+        $result = mysqli_query($conn, $query);
 
-        echo $fisik;
+        if ($result && mysqli_affected_rows($conn) > 0) {
+            echo json_encode(['success' => true, 'message' => 'Update berhasil']);
+        } else {
+            $error = mysqli_error($conn);
+            echo json_encode(['success' => false, 'message' => 'Gagal update: ' . $error]);
+        }
     }
 
     if(isset($_POST["DETAILDATASANKSIPLG"]) && !empty($_POST["DETAILDATASANKSIPLG"])){

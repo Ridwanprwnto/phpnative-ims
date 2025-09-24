@@ -70,23 +70,8 @@ elseif(isset($_POST["deletedata"])){
                                         </div>
                                         <div class="modal-body">
                                             <div class="form-row">
-                                                <div class="col-md-12 mb-2">
-                                                <?php
-                                                    $code = "S";
-                                                    $id = autonum(5, "no_so", "head_stock_opname");
-
-                                                    if (strlen($id) == 5) {
-                                                        $newid = $code.$id;
-                                                    }
-                                                    else {
-                                                        $newid = $code.substr($id, 1);
-                                                    }
-                                                ?>
-                                                    <input type="hidden" name="page-so" value="<?= $redirect; ?>" class="form-control" readonly>
-                                                    <input type="hidden" name="kondisi-so" value="<?= $arrcond[5]; ?>" class="form-control" readonly>
-                                                    <label>REF SO : </label>
-                                                    <input type="text" name="no-so" value="<?= $newid; ?>" class="form-control" readonly>
-                                                </div>
+                                                <input type="hidden" name="page-so" value="<?= $redirect; ?>" class="form-control" readonly>
+                                                <input type="hidden" name="kondisi-so" value="<?= $arrcond[5]; ?>" class="form-control" readonly>
                                                 <div class="col-md-12 mb-2">
                                                     <label>Petugas : </label>
                                                     <input type="text" name="petugas-so" value="<?= $nik." - ".strtoupper($username);?>" class="form-control" readonly>
