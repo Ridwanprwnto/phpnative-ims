@@ -3206,7 +3206,8 @@ function InsertKKSO($data) {
     global $conn;
 
     $page = $_POST["page-so"];
-    $noso = $_POST["no-so"];
+    $code = "S";
+    $noso = $code.autonum(5, 'no_so', 'head_stock_opname');
     $tgl = date("Y-m-d H:i:s");
     $user = htmlspecialchars(mysqli_real_escape_string($conn, substr($data["petugas-so"], 0, 10)));
     $office = htmlspecialchars(mysqli_real_escape_string($conn, $_POST["office-so"]));
@@ -6334,7 +6335,8 @@ function InsertKKSONA($data) {
     global $conn;
 
     $page = $_POST["page-so"];
-    $noso = $_POST["no-so"];
+    $code = "S";
+    $noso = $code.autonum(5, 'no_so', 'head_stock_opname');
     $user = htmlspecialchars(mysqli_real_escape_string($conn, substr($data["petugas-so"], 0, 10)));
     $office = htmlspecialchars(mysqli_real_escape_string($conn, $_POST["office-so"]));
     $dept = htmlspecialchars(mysqli_real_escape_string($conn, $_POST["dept-so"]));

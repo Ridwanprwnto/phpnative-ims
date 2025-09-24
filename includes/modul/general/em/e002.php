@@ -196,17 +196,14 @@ elseif(isset($_POST["uploaddataso"])){
                                         <td><?= $data["pluid_so"];?></td>
                                         <td><?= $data["NamaBarang"].' '.$data["NamaJenis"];?></td>
                                         <td><?= $saldo = $data["saldo_so"];?></td>
-
                                         <td class="edit_td">
                                             <span id="fisikso_<?= $data["no_so_detail"]; ?>" class="text"><?= $fisik; ?></span>
-                                            <input type="number" value="<?= $fisik; ?>" class="form-control editbox" id="fisikso_input_<?= $data["no_so_detail"]; ?>">
+                                            <input type="number" min="0" step="1" value="<?= $fisik; ?>" class="form-control editbox fisik-input" id="fisikso_input_<?= $data["no_so_detail"]; ?>" data-id="<?= $data["no_so_detail"]; ?>">
                                         </td>
-                                        
                                         <td><?= $fisik-$saldo;?></td>
-
                                         <td class="edit_td">
                                             <span id="ketso_<?= $data["no_so_detail"]; ?>" class="text"><?= $data["keterangan_so"]; ?></span>
-                                            <textarea type="text" value="<?= $data["keterangan_so"];?>" class="form-control editbox" id="ketso_input_<?= $data["no_so_detail"];?>" placeholder="Input Keterangan"><?= $data["keterangan_so"]; ?></textarea>
+                                            <textarea class="form-control editbox ket-input" id="ketso_input_<?= $data["no_so_detail"]; ?>" placeholder="Input Keterangan" data-id="<?= $data["no_so_detail"]; ?>"><?= $data["keterangan_so"]; ?></textarea>
                                         </td>
                                     </tr>
                                 <?php } ?>
@@ -303,51 +300,99 @@ elseif(isset($_POST["uploaddataso"])){
 <!-- // Basic form layout section end -->
 
 <script>
-
 $(document).ready(function() {
-    $(".edit_tr").click(function() {
-    var ID = $(this).attr('id');
-    $("#ketso_"+ID).hide();
-    $("#fisikso_"+ID).hide();
-    $("#ketso_input_"+ID).show();
-    $("#fisikso_input_"+ID).show();
-    }).change(function() {
-        var ID = $(this).attr('id');
-        var ket_so = $("#ketso_input_"+ID).val();
-        var fisik_so = $("#fisikso_input_"+ID).val();
-        var dataString = 'IDSO='+ID+'&FISIKSO='+fisik_so+'&KETSO='+ket_so;
-        if(fisik_so >= 0) {
-            if(ket_so.length > 0) {
+    // Fungsi untuk save data via AJAX (reusable)
+    function saveData(ID, fisik_so, ket_so) {
+        var dataString = 'IDSO=' + ID + '&FISIKSO=' + fisik_so + '&KETSO=' + ket_so;
+        if (fisik_so >= 0 && fisik_so !== '') {  // Validasi: >=0 dan tidak kosong
+            if (ket_so.trim().length > 0) {  // Trim untuk hilangkan spasi kosong
                 $.ajax({
                     type: "POST",
                     url: "action/datarequest.php",
                     data: dataString,
                     cache: false,
-                    success: function(html) {
-                        $("#ketso_"+ID).html(ket_so);
-                        $("#fisikso_"+ID).html(fisik_so);
-                        toastr.success('Data ID '+ ID +' berhasil di update!', 'Stock Opname Non Aktiva');
+                    dataType: 'json',  // Expect JSON response
+                    success: function(response) {
+                        if (response.success) {
+                            $("#fisikso_" + ID).html(fisik_so);
+                            $("#ketso_" + ID).html(ket_so);
+                            $("#fisikso_input_" + ID).hide();
+                            $("#ketso_input_" + ID).hide();
+                            $("#fisikso_" + ID).show();
+                            $("#ketso_" + ID).show();
+                            toastr.success('Data ID ' + ID + ' berhasil diupdate!', 'Stock Opname Non Aktiva');
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Error AJAX: Gagal update data. Cek koneksi.');
                     }
                 });
+            } else {
+                alert('Keterangan wajib diisi!');
             }
-            else {
-                alert('Keterangan wajib di input!');
-            }
-        }   
-        else {
-            alert('Fisik tidak boleh kurang dari nol');
+        } else {
+            alert('Fisik harus >= 0 dan tidak boleh kosong!');
+        }
+    }
+
+    // Click pada baris untuk show input
+    $(".edit_tr").click(function(e) {
+        if (!$(e.target).hasClass('editbox')) {  // Hindari trigger jika klik input langsung
+            var ID = $(this).attr('id');
+            $("#fisikso_" + ID).hide();
+            $("#ketso_" + ID).hide();
+            $("#fisikso_input_" + ID).show().focus();  // Focus ke input fisik
+            $("#ketso_input_" + ID).show();
         }
     });
 
-    // Edit input box click action
-    $(".editbox").mouseup(function() {
-        return false
+    // Change pada INPUT FISIK (trigger saat value berubah dan blur)
+    $(".fisik-input").change(function() {
+        var ID = $(this).attr('data-id');  // Tambah data-id di HTML nanti
+        var fisik_so = parseFloat($(this).val()) || 0;  // Parse ke number, default 0 jika invalid
+        var ket_so = $("#ketso_input_" + ID).val();
+        saveData(ID, fisik_so, ket_so);
     });
 
-    // Outside click action
-    $(document).mouseup(function() {
-        $(".editbox").hide();
-        $(".text").show();
+    // Change pada TEXTAREA KETERANGAN (trigger saat value berubah dan blur)
+    $(".ket-input").change(function() {
+        var ID = $(this).attr('data-id');
+        var fisik_so = parseFloat($("#fisikso_input_" + ID).val()) || 0;
+        var ket_so = $(this).val();
+        saveData(ID, fisik_so, ket_so);
+    });
+
+    // Enter key di input untuk save cepat
+    $(".editbox").keypress(function(e) {
+        if (e.which == 13) {  // Enter
+            var ID = $(this).attr('data-id');
+            var fisik_so = parseFloat($("#fisikso_input_" + ID).val()) || 0;
+            var ket_so = $("#ketso_input_" + ID).val();
+            saveData(ID, fisik_so, ket_so);
+        }
+    });
+
+    // Prevent seleksi teks di input
+    $(".editbox").mouseup(function() {
+        return false;
+    });
+
+    // Klik luar: Hide input DAN save data otomatis
+    $(document).mouseup(function(e) {
+        if (!$(e.target).closest('.edit_tr').length) {  // Jika klik di luar tr
+            $(".editbox").each(function() {
+                var ID = $(this).attr('data-id');
+                if (ID) {  // Jika ada input terbuka
+                    var fisik_so = parseFloat($("#fisikso_input_" + ID).val()) || 0;
+                    var ket_so = $("#ketso_input_" + ID).val();
+                    // saveData(ID, fisik_so, ket_so);  // Save sebelum hide
+                }
+            });
+            $(".editbox").hide();
+            $(".text").show();
+        }
     });
 });
 
