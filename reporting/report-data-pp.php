@@ -142,7 +142,7 @@ if (isset($_POST["printpdf"])) {
 
                 $pdf->SetFont('Arial','B',9);
                 $pdf->Cell(275, 6, 'PPNO : '.$ppid.' - USER : '.strtoupper($user_pros).' - JENIS PP : '.$pp.' - TGL PROSES : '.$tgl_pr.' - TGL PENGAJUAN : '.$tgl_pj, 1, 1);
-                $pdf->Cell(275, 6, 'KEPERLUAN : '.$keperluan, 1, 1);
+                $pdf->MultiCell(275, 6, 'KEPERLUAN PP : '.$keperluan, 1, 1);
                 $pdf->Cell(275, 6, 'STATUS PP : '.strtoupper($status), 1, 1);
 
                 $nod = 1;
@@ -209,23 +209,24 @@ elseif (isset($_POST["printexcell"])) {
         // sheet peratama
         $sheet->setTitle('Sheet 1');
 
-        $sheet->getStyle('A1:O1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:P1')->getFont()->setBold(true);
 
         $sheet->setCellValue('A1', 'NO');
         $sheet->setCellValue('B1', 'JENIS PP');
-        $sheet->setCellValue('C1', 'NOMOR PP');
-        $sheet->setCellValue('D1', 'TGL PP');
-        $sheet->setCellValue('E1', 'NAMA BARANG');
-        $sheet->setCellValue('F1', 'SATUAN');
-        $sheet->setCellValue('G1', 'JUMLAH PP');
-        $sheet->setCellValue('H1', 'EST HARGA TOTAL');
-        $sheet->setCellValue('I1', 'KEPERLUAN');
-        $sheet->setCellValue('J1', 'PIC PP');
-        $sheet->setCellValue('K1', 'KETERANGAN PP');
-        $sheet->setCellValue('L1', 'TGL REALISASI');
-        $sheet->setCellValue('M1', 'JUMLAH REALISASI');
-        $sheet->setCellValue('N1', 'KETERANGAN TERIMA');
-        $sheet->setCellValue('O1', 'PENERIMA BARANG');
+        $sheet->setCellValue('C1', 'STATUS PP');
+        $sheet->setCellValue('D1', 'NOMOR PP');
+        $sheet->setCellValue('E1', 'TGL PP');
+        $sheet->setCellValue('F1', 'NAMA BARANG');
+        $sheet->setCellValue('G1', 'SATUAN');
+        $sheet->setCellValue('H1', 'JUMLAH PP');
+        $sheet->setCellValue('I1', 'EST HARGA TOTAL');
+        $sheet->setCellValue('J1', 'KEPERLUAN');
+        $sheet->setCellValue('K1', 'PIC PP');
+        $sheet->setCellValue('L1', 'KETERANGAN PP');
+        $sheet->setCellValue('M1', 'TGL REALISASI');
+        $sheet->setCellValue('N1', 'JUMLAH REALISASI');
+        $sheet->setCellValue('O1', 'KETERANGAN TERIMA');
+        $sheet->setCellValue('P1', 'PENERIMA BARANG');
     
         $query_xcl = mysqli_query($conn, $sql);
         if(mysqli_num_rows($query_xcl) > 0 ) {
@@ -237,7 +238,7 @@ elseif (isset($_POST["printexcell"])) {
                 $id_pp = $data_xcl["id_pembelian"];
                 $tgl_pr = $data_xcl["proses_date"];
                 $user_pros = $data_xcl["user"]." - ".strtoupper($data_xcl["username"]);
-                $status = $data_xcl["status_name"];
+                $status = strtoupper($data_xcl["status_name"]);
                 $keperluan = $data_xcl["keperluan"];
 
                 $str_date_pp = $data_xcl['tgl_pengajuan'];
@@ -290,19 +291,20 @@ elseif (isset($_POST["printexcell"])) {
                         
                         $sheet->setCellValue('A'.$row_xcl, $no_xcl++);
                         $sheet->setCellValue('B'.$row_xcl, $pp);
-                        $sheet->setCellValue('C'.$row_xcl, $ppid);
-                        $sheet->setCellValue('D'.$row_xcl, $tgl_pj);
-                        $sheet->setCellValue('E'.$row_xcl, $idplu." - ".$barang);
-                        $sheet->setCellValue('F'.$row_xcl, $satuan);
-                        $sheet->setCellValue('G'.$row_xcl, $idqty);
-                        $sheet->setCellValue('H'.$row_xcl, $hargapp);
-                        $sheet->setCellValue('I'.$row_xcl, $peruntukan);
-                        $sheet->setCellValue('J'.$row_xcl, $user_pros);
-                        $sheet->setCellValue('K'.$row_xcl, $keperluan);
-                        $sheet->setCellValue('L'.$row_xcl, $tgl_btb);
-                        $sheet->setCellValue('M'.$row_xcl, $qtybtb);
-                        $sheet->setCellValue('N'.$row_xcl, $ket);
-                        $sheet->setCellValue('O'.$row_xcl, $usern);
+                        $sheet->setCellValue('C'.$row_xcl, $status);
+                        $sheet->setCellValue('D'.$row_xcl, $ppid);
+                        $sheet->setCellValue('E'.$row_xcl, $tgl_pj);
+                        $sheet->setCellValue('F'.$row_xcl, $idplu." - ".$barang);
+                        $sheet->setCellValue('G'.$row_xcl, $satuan);
+                        $sheet->setCellValue('H'.$row_xcl, $idqty);
+                        $sheet->setCellValue('I'.$row_xcl, $hargapp);
+                        $sheet->setCellValue('J'.$row_xcl, $peruntukan);
+                        $sheet->setCellValue('K'.$row_xcl, $user_pros);
+                        $sheet->setCellValue('L'.$row_xcl, $keperluan);
+                        $sheet->setCellValue('M'.$row_xcl, $tgl_btb);
+                        $sheet->setCellValue('N'.$row_xcl, $qtybtb);
+                        $sheet->setCellValue('O'.$row_xcl, $ket);
+                        $sheet->setCellValue('P'.$row_xcl, $usern);
                         $row_xcl++;
 
                     }
