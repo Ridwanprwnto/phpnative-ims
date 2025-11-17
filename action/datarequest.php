@@ -2108,14 +2108,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if(isset($_POST["DETAILDATASO"]) && !empty($_POST["DETAILDATASO"])){
 
-        $id = $_POST['DETAILDATASO'];
+        $dataso = $_POST['DETAILDATASO'];
+
+        $id = substr($dataso, 0, 6);
+        $offdept = substr($dataso, 6, 8);
 
         $sql = "SELECT A.*, B.*, C.IDJenis, C.NamaJenis, D.nama_satuan, COUNT(F.pluid_so_asset) AS total FROM detail_stock_opname AS A 
         INNER JOIN mastercategory AS B ON LEFT(A.pluid_so, 6) = B.IDBarang
         INNER JOIN masterjenis AS C ON RIGHT(A.pluid_so, 4) = C.IDJenis
         INNER JOIN satuan AS D ON B.id_satuan = D.id_satuan
         INNER JOIN asset_stock_opname AS F ON A.pluid_so = F.pluid_so_asset
-        WHERE A.no_so_head = '$id' GROUP BY A.pluid_so ";
+        WHERE A.no_so_head = '$id' AND offdep_so_asset = '$offdept' GROUP BY A.pluid_so ";
 
         $query_header = mysqli_query($conn, $sql);
         $data_header = mysqli_fetch_assoc($query_header);
