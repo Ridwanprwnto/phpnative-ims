@@ -4076,6 +4076,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     }
 
+    if(isset($_POST["AKSIMASTERSHEET"]) && !empty($_POST["AKSIMASTERSHEET"])){
+
+        $id = $_POST['AKSIMASTERSHEET'];
+
+        $sql = "SELECT id_sheet, doc_sheet, subject_sheet, link_sheet, linkid_sheet, flagsync_sheet FROM sheet
+                WHERE id_sheet  = '$id'";
+
+        $query = mysqli_query($conn, $sql);
+        $data = mysqli_fetch_assoc($query);
+
+        die(json_encode($data));
+        
+    }
+
 }
 else {
     echo json_encode(['status' => 'error', 'message' => 'Metode tidak diizinkan.']);
