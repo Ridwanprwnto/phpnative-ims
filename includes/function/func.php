@@ -7798,7 +7798,7 @@ function PostingKehadiran($data) {
     $client->setPrompt('select_account consent');
     $service = new Google_Service_Sheets($client);
 
-    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet");
+    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet WHERE subject_sheet = 'PRESENSI IMS'");
 
     if (mysqli_num_rows($query_sheet) === 0) {
 
@@ -7951,7 +7951,7 @@ function EditKehadiran($data) {
     $idmax = autonum(6, 'no_aprv_presensi', 'approval_presensi');
     $docno = $aksi."-".$idmax;
 
-    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet");
+    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet WHERE subject_sheet = 'PRESENSI IMS'");
 
     if (mysqli_num_rows($query_sheet) === 0) {
 
@@ -8062,7 +8062,7 @@ function DeleteKehadiran($data) {
     $idmax = autonum(6, 'no_aprv_presensi', 'approval_presensi');
     $docno = $aksi."-".$idmax;
 
-    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet");
+    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet WHERE subject_sheet = 'PRESENSI IMS'");
 
     if (mysqli_num_rows($query_sheet) === 0) {
 
@@ -8311,7 +8311,7 @@ function RepostingKehadiran($data) {
     $client->setPrompt('select_account consent');
     $service = new Google_Service_Sheets($client);
 
-    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet");
+    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet WHERE subject_sheet = 'PRESENSI IMS'");
 
     if (mysqli_num_rows($query_sheet) === 0) {
 
@@ -8460,7 +8460,7 @@ function ResendOTPAbsensi($data) {
     $transk = htmlspecialchars($data["trans-resendotp"]);
     $page = $data["page-resendotp"];
 
-    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet");
+    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet WHERE subject_sheet = 'PRESENSI IMS'");
 
     if (mysqli_num_rows($query_sheet) === 0) {
 
@@ -8529,7 +8529,7 @@ function SendMessageTelebot($chatID, $office, $nameheadiv, $aksi, $docno, $otp, 
     $apiToken = $data_mtele["token_mstr_telebot"];
     $uname = $data_mtele["uname_mstr_telebot"];
 
-    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet");
+    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet WHERE subject_sheet = 'PRESENSI IMS'");
     $data_sheet = mysqli_fetch_assoc($query_sheet);
 
     $subject = $data_sheet["subject_sheet"];
@@ -8839,7 +8839,7 @@ function InputPerubahanJadwal($data) {
     $idmax = autonum(6, 'no_aprv_presensi', 'approval_presensi');
     $doc_app = $aksi."-".$idmax;
 
-    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet");
+    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet WHERE subject_sheet = 'PRESENSI IMS'");
 
     if (mysqli_num_rows($query_sheet) === 0) {
 
@@ -8958,7 +8958,7 @@ function ApprovePerubahanJadwal($data) {
     $user = mysqli_real_escape_string($conn, isset($data["update-userpresensi"]) ? $data["update-userpresensi"] : NULL);
     $otp = mysqli_real_escape_string($conn, $data["update-otppresensi"]);
 
-    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet");
+    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet WHERE subject_sheet = 'PRESENSI IMS'");
 
     if (mysqli_num_rows($query_sheet) === 0) {
 
@@ -10086,6 +10086,241 @@ function PostingTablokPertemanan($data) {
     }
     
 }   
+// End function
+
+// ---------------------------- //
+
+// function Menambahkan Data Google Sheet
+function InsertSheetMaster($data) {
+
+    global $conn;
+
+    // Input data post
+    $page = $data["page-insgsheet"];
+    $subject = htmlspecialchars(strtoupper($data["master-insgsheet"]));
+    $link = htmlspecialchars(strtolower($data["link-insgsheet"]));
+    $linkid = htmlspecialchars(strtolower($data["linkid-insgsheet"]));
+    $sync = htmlspecialchars($data["status-insgsheet"]);
+
+    $numid = autonum(4, 'doc_sheet', 'sheet');
+
+    $query = mysqli_query($conn, "SELECT subject_sheet FROM sheet WHERE subject_sheet = '$subject'");
+
+    if(mysqli_fetch_assoc($query)) {
+
+        $GLOBALS['alert'] = array("Gagal!", "Master Sheet ".$subject." Telah Terdaftar", "error", "$page");
+        return false;
+    
+    }
+    
+    mysqli_query($conn, "INSERT INTO sheet (doc_sheet, subject_sheet, link_sheet, linkid_sheet, flagsync_sheet) VALUES ('$numid', '$subject', '$link', '$linkid', '$sync')");
+
+    return mysqli_affected_rows($conn);
+}
+// End function
+
+// ---------------------------- //
+
+// function Merubah Data Google Sheet
+function UpdateSheetMaster($data) {
+
+    global $conn;
+
+    $page = $data["page-updgsheet"];
+    $id = htmlspecialchars($data["id-updgsheet"]);
+    $tmpsubject = htmlspecialchars(strtoupper($data["tmpsubject-updgsheet"]));
+    $subject = htmlspecialchars(strtoupper($data["subject-updgsheet"]));
+    $link = htmlspecialchars(strtolower($data["link-updgsheet"]));
+    $linkid = htmlspecialchars(strtolower($data["linkid-updgsheet"]));
+    $sync = htmlspecialchars($data["sync-updgsheet"]);
+
+    if ($subject != $tmpsubject) {
+        $query = mysqli_query($conn, "SELECT subject_sheet FROM sheet WHERE subject_sheet = '$subject'");
+    
+        if(mysqli_fetch_assoc($query)) {
+    
+            $GLOBALS['alert'] = array("Gagal!", "Master Sheet ".$subject." Telah Terdaftar", "error", "$page");
+            return false;
+        
+        }
+    }
+    
+    mysqli_query($conn, "UPDATE sheet SET subject_sheet = '$subject', link_sheet = '$link', linkid_sheet = '$linkid', flagsync_sheet = '$sync' WHERE id_sheet = '$id'");
+
+    return mysqli_affected_rows($conn);
+}
+// End function
+
+// ---------------------------- //
+
+// function Menghapus Data Google Sheet
+function DeleteSheetMaster($data) {
+
+    global $conn;
+
+    $id = htmlspecialchars($data["id-delgsheet"]);
+    
+    mysqli_query($conn, "DELETE FROM sheet WHERE id_sheet = '$id'");
+
+    return mysqli_affected_rows($conn);
+}
+// End function
+
+// ---------------------------- //
+
+// function Syncron Data Google Sheet Master Aktiva
+function SyncronDataGSheetMasterAktiva($data) {
+
+    global $conn;
+
+    $date = date("Y-m-d H:i:s");
+    $page = mysqli_real_escape_string($conn, $data["page-syngsheet"]);
+    $subject = mysqli_real_escape_string($conn, $data["subject-syngsheet"]);
+    $office = mysqli_real_escape_string($conn, $_POST["office-syngsheet"]);
+    $dept = mysqli_real_escape_string($conn, $_POST["dept-syngsheet"]);
+
+    $kepdat = $office.$dept;
+    
+    require 'vendor/autoload.php';
+
+    $client = new Google_Client();
+    $client->setApplicationName('Google Sheets and PHP');
+    $client->setScopes(Google_Service_Sheets::SPREADSHEETS);
+    $client->setAuthConfig('includes/config/client_secret.json');
+    $client->setAccessType('offline');
+    $client->setPrompt('select_account consent');
+    $service = new Google_Service_Sheets($client);
+
+    // Cek spreadsheet terdaftar
+    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet WHERE subject_sheet = '$subject'");
+    if (mysqli_num_rows($query_sheet) === 0) {
+
+        $GLOBALS['alert'] = array("Gagal!", "Link google sheet belum terdaftar", "error", "$page");
+        return false;
+
+    }
+    $data_sheet = mysqli_fetch_assoc($query_sheet);
+    $spreadsheetId = $data_sheet["linkid_sheet"];
+    $rangeClear = $data["data-syngsheet"]."!A2:Z";
+    $rangeAppend  = $data["data-syngsheet"]."!A2";
+
+    // STEP 1: HAPUS SEMUA DATA DI SHEET TERLEBIH DAHULU
+    try {
+        $service->spreadsheets_values->clear(
+            $spreadsheetId, 
+            $rangeClear, 
+            new Google_Service_Sheets_ClearValuesRequest()
+        );
+    } catch (Exception $e) {
+        $GLOBALS['alert'] = array("Gagal!", "Gagal menghapus data sheet: " . $e->getMessage(), "error", "$page");
+        return false;
+    }
+    
+    // STEP 2: AMBIL DATA DARI DATABASE
+    $result_masaktiva = [];
+    $sql_masaktiva = "SELECT A.*, B.NamaBarang, C.NamaJenis, D.id_kondisi, D.kondisi_name, E.username, F.perolehan_dat, F.status_dat, G.tgl_bkse, G.penempatan_bkse, G.kerusakan_bkse, G.user_bkse, H.keterangan_sj, I.tanggal_sj, I.user_sj, I.keperluan_sj FROM barang_assets AS A
+    INNER JOIN mastercategory AS B ON LEFT(A.pluid, 6) = B.IDBarang
+    INNER JOIN masterjenis AS C ON RIGHT(A.pluid, 4) = C.IDJenis
+    INNER JOIN kondisi AS D ON A.kondisi = D.id_kondisi
+    LEFT JOIN users AS E ON A.user_asset = E.nik
+    INNER JOIN dat AS F ON LEFT(A.dat_asset, 4) = F.office_dat AND RIGHT(A.dat_asset, 4) = F.dept_dat AND A.pluid = F.pluid_dat AND A.no_at = F.no_dat
+    LEFT JOIN bkse AS G ON A.pluid = G.pluid_bkse AND A.sn_barang = G.sn_bkse AND G.tgl_bkse = (
+        SELECT MAX(tgl_bkse)
+        FROM bkse
+        WHERE pluid_bkse = A.pluid AND sn_bkse = A.sn_barang
+   )
+    LEFT JOIN detail_surat_jalan AS H ON G.pluid_bkse = H.pluid_sj AND G.sn_bkse = H.sn_sj AND H.detail_no_sj = (
+        SELECT MAX(detail_no_sj)
+        FROM detail_surat_jalan
+        WHERE pluid_sj = A.pluid AND sn_sj = A.sn_barang
+   )
+   LEFT JOIN surat_jalan AS I ON H.head_no_sj = I.no_sj
+    WHERE A.dat_asset = '$kepdat' AND A.kondisi != '06' ORDER BY A.pluid ASC";
+
+    $query_masaktiva = mysqli_query($conn, $sql_masaktiva);
+
+    while($data_masaktiva = mysqli_fetch_assoc($query_masaktiva)){
+
+        // Reset di setiap iterasi agar tidak terbawa ke baris berikutnya
+        $tgl_kerusakan = "-";
+        $pic_kerusakan = "-";
+        $lok_kerusakan = "-";
+        $ket_kerusakan = "-";
+
+        // Hanya isi jika kondisi 03, 04, atau 05
+        if (in_array($data_masaktiva["kondisi"], ["03", "04", "05"])) {
+            $tgl_kerusakan = $data_masaktiva["tgl_bkse"]        ?? "-";
+            $pic_kerusakan = $data_masaktiva["user_bkse"]       ?? "-";
+            $lok_kerusakan = $data_masaktiva["penempatan_bkse"] ?? "-";
+            $ket_kerusakan = $data_masaktiva["kerusakan_bkse"]  ?? "-";
+        }
+        
+        $result_masaktiva[] = sanitizeRow([
+            $date,
+            substr($data_masaktiva["dat_asset"] ?? "", 0, 4),
+            $data_masaktiva["perolehan_dat"] ?? "-",
+            $data_masaktiva["pluid"] ?? "-",
+            trim($data_masaktiva["NamaBarang"] . " "
+                . $data_masaktiva["NamaJenis"] . " "
+                . $data_masaktiva["ba_merk"]   . " "
+                . $data_masaktiva["ba_tipe"]),
+            $data_masaktiva["sn_barang"] ?? "",
+            $data_masaktiva["no_at"] ?? "",
+            ($data_masaktiva["kondisi"] ?? "") . " - " . ($data_masaktiva["kondisi_name"] ?? ""),
+            $data_masaktiva["referensi_asset"] ?? "",
+            $data_masaktiva["modified_asset"] ?? "",
+            strtoupper($data_masaktiva["posisi"] ?? ""),
+            $tgl_kerusakan,
+            $pic_kerusakan,
+            $lok_kerusakan,
+            $ket_kerusakan,
+            $data_masaktiva["keperluan_sj"] ?? "-",
+            $data_masaktiva["tanggal_sj"] ?? "-",
+            $data_masaktiva["user_sj"] ?? "-",
+            $data_masaktiva["keterangan_sj"] ?? "-",
+        ]);
+    }
+
+    // Cek jika tidak ada data
+    if (empty($result_masaktiva)) {
+        $GLOBALS['alert'] = array("Perhatian!", "Tidak ada data untuk disinkronkan", "warning", "$page");
+        return false;
+    }
+
+    // Validasi JSON sebelum dikirim
+    if (json_encode(['values' => $result_masaktiva]) === false) {
+        $GLOBALS['alert'] = array("Gagal!", "JSON Error: " . json_last_error_msg(), "error", "$page");
+        return false;
+    }
+
+    // STEP 3: INSERT DATA BARU KE SHEET
+    try {
+        $body   = new Google_Service_Sheets_ValueRange(['values' => $result_masaktiva]);
+        $params = ['valueInputOption' => 'RAW'];
+        $insert = ['insertDataOption' => 'INSERT_ROWS'];
+    
+        $result = $service->spreadsheets_values->append($spreadsheetId, $rangeAppend, $body, $params, $insert);
+        return $result;
+    
+    } catch (Exception $e) {
+        $GLOBALS['alert'] = array("Gagal!", "Gagal mengirim data ke sheet: " . $e->getMessage(), "error", "$page");
+        return false;
+    }
+
+}
+// End function
+
+// ---------------------------- //
+
+// function Sanitasi Baris Untuk Membersihkan String dan Array Selalu Sequential
+function sanitizeRow(array $row): array {
+    return array_values(array_map(function($value) {
+        if (is_null($value))  return "";
+        if (is_bool($value))  return $value ? "1" : "0";
+        if (is_array($value)) return json_encode($value);
+        return (string) $value;
+    }, $row));
+}
 // End function
 
 // ---------------------------- //
