@@ -9254,7 +9254,7 @@ function UpdateVersiApplication($data) {
     $info = isset($data["info-upd-verapp"]) ? htmlspecialchars($data["info-upd-verapp"]) : $data["infohide-upd-verapp"];
     $use = isset($data["use-upd-verapp"]) ? htmlspecialchars($data["use-upd-verapp"]) : $data["usehide-upd-verapp"];
     $apl = $data["apl-upd-verapp"];
-    $jenis = htmlspecialchars($data["file-upd-verapp"] == "DESKTOP" ? "zip" : "apk");
+    $jenis = isset($data["file-upd-verapp"]) ? (htmlspecialchars($data["file-upd-verapp"]) == "DESKTOP" ? "zip" : "apk") : null;
 
     if (isset($data["web-upd-verapp"])) {
         $master = strtolower($data["web-upd-verapp"]);
@@ -9351,13 +9351,13 @@ function UploadUserManual($manual, $page) {
     $error = isset($_FILES['manual-insversi-app']['error']) ? $_FILES['manual-insversi-app']['error'] : NULL;
     $tmp = isset($_FILES['manual-insversi-app']['tmp_name']) ? $_FILES['manual-insversi-app']['tmp_name'] : NULL;
 
-    $eksvalid = ["pdf", "ppt", "pptx"];
+    $eksvalid = ["pdf", "ppt", "pptx", "doc", "docx"];
     $eks = explode('.', $name);
     $eks = strtolower(end($eks));
 
     if(!in_array($eks, $eksvalid)) {
 
-        $GLOBALS['alert'] = array("Gagal!", "File yang anda upload bukan format pdf, ppt atau pptx", "error", "$page");
+        $GLOBALS['alert'] = array("Gagal!", "File yang anda upload bukan format pdf, ppt, pptx, doc, atau docx", "error", "$page");
         return false;
 
     }

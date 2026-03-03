@@ -197,6 +197,7 @@ elseif(isset($_POST["deleteversiapplication"])){
                                                             <input type="hidden" name="code-upd-verapp" id="code-upd-verapp" class="form-control" readonly>
                                                             <input type="hidden" name="apl-upd-verapp" id="apl-upd-verapp" class="form-control" readonly>
                                                             <input type="hidden" name="mnl-upd-verapp" id="mnl-upd-verapp" class="form-control" readonly>
+                                                            <input type="hidden" name="file-upd-verapp" id="file-upd-verapp" class="form-control" readonly>
                                                             <input type="hidden" name="infohide-upd-verapp" id="infohide-upd-verapp" class="form-control" readonly>
                                                             <input type="hidden" name="usehide-upd-verapp" id="usehide-upd-verapp" class="form-control" readonly>
                                                             <div class="col-md-6 mb-2">
@@ -344,6 +345,8 @@ $(document).ready(function(){
                     
                     $("#web-upd-verapp").removeAttr('required');
                     $("#web-upd-verapp").prop('disabled', data.basis_app);
+                    
+                    $('#file-upd-verapp').val(data.basis_app);
                     
                     $("#nonweb-insversi-app").removeAttr('disabled');
 
