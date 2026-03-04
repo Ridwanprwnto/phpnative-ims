@@ -1,7 +1,9 @@
 <?php
 
-$idoffice = $_SESSION['office'];
-$iddept = $_SESSION['department'];
+$office_id = $_SESSION['office'];
+$dept_id = $_SESSION['department'];
+$div_id = $_SESSION['divisi'];
+$usernik = $_SESSION["user_nik"];
 
 $page_id = $_GET['page'];
 
@@ -10,17 +12,23 @@ $encpid = encrypt($dec_page);
 
 $redirect = "index.php?page=".$encpid;
 
-if(isset($_POST["insertdata"])){
+if(isset($_POST["insertmasterdat"])){
     if(InsertMasterDAT($_POST) > 0 ){
-        $datapost1 = isset($_POST["nomor-dat"]) ? $_POST["nomor-dat"] : NULL;
-        $datapost2 = isset($_POST["barang-dat"]) ? $_POST["barang-dat"] : NULL;
-        $alert = array("Success!", "Master DAT ".$datapost1." Barang ".$datapost2." Berhasil Ditambah", "success", "$redirect");
+        $alert = array("Success!", "Master DAT Berhasil Ditambah", "success", "$redirect");
     }
     else {
         echo mysqli_error($conn);
     }
 }
-elseif(isset($_POST["updatedata"])){
+elseif(isset($_POST["importmasterdat"])){
+    if(UploadMasterDAT($_POST) > 0 ){
+        $alert = array("Success!", "Master DAT Berhasil Diupload", "success", "$redirect");
+    }
+    else {
+        echo mysqli_error($conn);
+    }
+}
+elseif(isset($_POST["updatemasterdat"])){
     if(UpdateMasterDAT($_POST) > 0 ){
         $datapost = isset($_POST["nomor-updkepdat"]) ? $_POST["nomor-updkepdat"] : NULL;
         $alert = array("Success!", "Master DAT ".$datapost." Berhasil Diupdate", "success", "$redirect");
@@ -29,7 +37,7 @@ elseif(isset($_POST["updatedata"])){
         echo mysqli_error($conn);
     }
 }
-elseif(isset($_POST["deletedata"])){
+elseif(isset($_POST["deletemasterdat"])){
     if(DeleteMasterDAT($_POST) > 0 ){
         $datapost = isset($_POST["nomor-delkepdat"]) ? $_POST["nomor-delkepdat"] : NULL;
         $alert = array("Success!", "Master DAT ".$datapost." Berhasil Didelete", "success", "$redirect");
@@ -38,9 +46,17 @@ elseif(isset($_POST["deletedata"])){
         echo mysqli_error($conn);
     }
 }
-elseif(isset($_POST["uploaddata"])){
-    if(UploadMasterDAT($_POST) > 0 ){
-        $alert = array("Success!", "Master DAT Berhasil Diupload", "success", "$redirect");
+elseif(isset($_POST["updatecheckmasterdat"])){
+    if(UpdateCheckMasterDAT($_POST) > 0 ){
+        $alert = array("Success!", "Master DAT berhasil di update", "success", "$redirect");
+    }
+    else {
+        echo mysqli_error($conn);
+    }
+}
+elseif(isset($_POST["deletecheckmasterdat"])){
+    if(DeleteCheckMasterDAT($_POST) > 0 ){
+        $alert = array("Success!", "Master DAT berhasil di delete", "success", "$redirect");
     }
     else {
         echo mysqli_error($conn);
@@ -64,260 +80,319 @@ elseif(isset($_POST["uploaddata"])){
                     </div>
                 </div>
                 <div class="card-content collapse show">
-                    <div class="card-body card-dashboard">
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <form method="post" action="reporting/report-file-masterdat.php" target="_blank">
-                                        <input type="hidden" name="office-cetak" value="<?= $idoffice; ?>" class="form-control" readonly>
-                                        <input type="hidden" name="dept-cetak" value="<?= $iddept; ?>" class="form-control" readonly>
-                                        <button type="button" class="btn btn-primary btn-min-width ml-2 mr-1 mb-2" data-toggle="modal" data-target="#modalEntryDAT">Entry Master DAT</button>
-                                        <button type="submit" class="btn btn-secondary btn-min-width mr-1 mb-2" name="exportdata" >Download Master DAT</button>
-                                        <button type="button" class="btn btn-secondary btn-min-width mb-2 " data-toggle="modal" data-target="#modalUploadDAT">Upload Master DAT</button>
-                                    </form>
-                                    <div class="modal fade text-left" id="modalEntryDAT" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                            <div class="modal-content">
-                                                <form action="" method="post">
-                                                    <div class="modal-header bg-primary white">
-                                                        <h4 class="modal-title white" id="myModalLabel">Entry Kepemilikan Data Aktiva Tetap</h4>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="form-row">
-                                                            <input type="hidden" name="page-dat" value="<?= $redirect; ?>" class="form-control" readonly>
-                                                            <input type="hidden" name="office-dat" value="<?= $idoffice; ?>" class="form-control" readonly>
-                                                            <input type="hidden" name="dept-dat" value="<?= $iddept; ?>" class="form-control" readonly>
-                                                            <div class="col-md-12 mb-2">
-                                                                <label>Tanggal Perolehan : </label>
-                                                                <input type="date" name="perolehan-dat" class="form-control" required>
-                                                            </div>
-                                                            <div class="col-md-12 mb-2">
-                                                                <label>Nomor Aktiva : </label>
-                                                                <input type="text" name="nomor-dat" placeholder="Input nomor aktiva" class="form-control" required>
-                                                            </div>
-                                                            <div class="col-md-12 mb-2">
-                                                                <label>Qty Aktiva : </label>
-                                                                <input type="number" name="qty-dat" placeholder="Input qty aktiva" class="form-control" required>
-                                                            </div>
-                                                            <div class="col-md-12 mb-2">
-                                                                <label>Master Barang : </label>
-                                                                <select class="select2 form-control block" style="width: 100%" type="text" name="barang-dat" required>
-                                                                    <option value="" selected disabled>Please Select</option>
-                                                                    <?php 
-                                                                        $sql = "SELECT A.*, B.* FROM masterjenis AS A INNER JOIN mastercategory AS B ON A.IDBarang = B.IDBarang ORDER BY B.NamaBarang ASC";
-                                                                        $query = mysqli_query($conn, $sql);
-                                                                        while($data = mysqli_fetch_assoc($query)) { ?>
-                                                                            <option value="<?= $data['IDBarang'].$data['IDJenis']; ?>">
-                                                                                <?= $data['IDBarang'].$data['IDJenis']." - ".$data['NamaBarang']." ".$data['NamaJenis'];?>
-                                                                            </option>
-                                                                        <?php 
-                                                                        } 
-                                                                    ?>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
-                                                        <button type="submit" name="insertdata" class="btn btn-outline-primary">Save</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- End Modal -->
-                                    <!-- Import Modal -->
-                                    <div class="modal fade text-left" id="modalUploadDAT" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered" role="document">
-                                            <div class="modal-content">
-                                                <form action="" method="post" enctype="multipart/form-data" role="form">
-                                                    <div class="modal-header bg-secondary white">
-                                                        <h4 class="modal-title white" id="myModalLabel">Upload Data Master DAT</h4>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="form-row">
-                                                            <input type="hidden" name="page" value="<?= $redirect; ?>" class="form-control" readonly>
-                                                            <input type="hidden" name="office" value="<?= $idoffice; ?>" class="form-control" readonly>
-                                                            <input type="hidden" name="dept" value="<?= $iddept; ?>" class="form-control" readonly>
-                                                            <div class="col-md-12 mb-2">
-                                                                <label>File : </label>
-                                                                <div class="custom-file">
-                                                                    <input type="file" class="custom-file-input" name="file-import" required>
-                                                                    <label class="custom-file-label">Choose file</label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
-                                                        <button type="submit" name="uploaddata" class="btn btn-outline-primary">Upload</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- End Modal -->
-                                </div>
+                    <div class="card-body">
+                        <!-- Normal Button -->
+                        <button type="button" class="btn btn-primary btn-min-width mr-1" data-toggle="modal" data-target="#modalEntryDAT">Entry Master DAT</button>
+                          <!-- /normal button -->
+
+                        <!-- Button dropdowns with icons -->
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info btn-min-width dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Import / Export Master DAT</button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="reporting/report-file-masterdat.php?id=<?= encrypt($office_id.$dept_id);?>" target="_blank">Export Master DAT</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" data-toggle="modal" data-target="#modalUploadDAT" href="#">Import Master DAT</a>
                             </div>
                         </div>
-                        <table class="table table-striped table-bordered zero-configuration text-center">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nomor Aktiva</th>
-                                    <th>Tanggal Perolehan</th>
-                                    <th>Qty Aktiva</th>
-                                    <th>Kode - Kategori Barang</th>
-                                    <th>Status DAT</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <?php
-                                $no = 1;
-                                $result = "SELECT A.*, B.id_office, B.office_name, C.id_department, C.department_name, D.*, E.* FROM dat AS A
-                                INNER JOIN office AS B ON A.office_dat = B.id_office
-                                INNER JOIN department AS C ON A.dept_dat = C.id_department
-                                INNER JOIN mastercategory AS D ON LEFT(A.pluid_dat, 6) = D.IDBarang
-                                INNER JOIN masterjenis AS E ON RIGHT(A.pluid_dat, 4) = E.IDJenis
-                                WHERE A.office_dat = '$idoffice' AND A.dept_dat = '$iddept'";
-                                $query = mysqli_query($conn, $result);
-                                while($data = mysqli_fetch_assoc($query)) {
-                            ?>
-                                <tr>
-                                    <td><?= $no++; ?></td>
-                                    <td><?= $data['no_dat']; ?></td>
-                                    <td><?= $data['perolehan_dat']; ?></td>
-                                    <td><?= $data['qty_dat']; ?></td>
-                                    <td><?= $data['pluid_dat']." - ".$data['NamaBarang']." ".$data['NamaJenis'];; ?></td>
-                                    <td>
-                                        <div class="badge badge-<?= $data['status_dat'] == "Y" ? "info" : "danger"; ?> label-square">
-                                            <i class="ft-info font-medium-2"></i>
-                                            <span><?= $data['status_dat'] == "Y" ? "AKTIF" : "NON AKTIF"; ?></span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <!-- Icon Button dropdowns -->
-                                        <div class="btn-group mb-1">
-                                            <button type="button" class="btn btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="ft-menu"></i></button>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item update_kep_dat" href="#" title="Edit Kepemilikan DAT Nomor <?= $data['no_dat']; ?>" name="update_kep_dat" id="<?= $data["id_dat"]; ?>" data-toggle="tooltip" data-placement="bottom">Update Kepemilikan DAT</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item delete_kep_dat" href="#" title="Hapus Kepemilikan DAT Nomor <?= $data['no_dat']; ?>" name="delete_kep_dat" id="<?= $data["id_dat"]; ?>" data-toggle="tooltip" data-placement="bottom">Delete Kepemilikan DAT</a>
-                                            </div>
-                                        </div>
-                                        <!-- /btn-group -->
-                                    </td>
-                                </tr>
-                                <?php
-                                }
-                            ?>
-                            </tbody>
-                        </table>
-                        <!-- Modal Update Kepemilikan DAT -->
-                        <div class="modal fade text-left" id="modalUpdateDAT" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <!-- /btn-group -->
+
+                          <!-- Import Modal -->
+                          <div class="modal fade text-left" id="modalUploadDAT" role="dialog"
+                            aria-labelledby="myModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
-                                    <form action="" method="post">
-                                        <div class="modal-header bg-success white">
-                                            <h4 class="modal-title white" id="label-updkepdat"></h4>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <form action="" method="post" enctype="multipart/form-data" role="form">
+                                        <div class="modal-header bg-info white">
+                                            <h4 class="modal-title white"
+                                                id="myModalLabel">Import Data Master DAT</h4>
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="form-row">
-                                                <input type="hidden" name="page-updkepdat" value="<?= $redirect; ?>" class="form-control" readonly>
-                                                <input type="hidden" name="id-updkepdat" id="id-updkepdat" class="form-control" readonly>
-                                                <input type="hidden" name="office-updkepdat" id="office-updkepdat" class="form-control" readonly>
-                                                <input type="hidden" name="dept-updkepdat" id="dept-updkepdat" class="form-control" readonly>
-                                                <input type="hidden" name="oldnomor-updkepdat" id="oldnomor-updkepdat" class="form-control" readonly>
-                                                <input type="hidden" name="oldstatus-updkepdat" id="oldstatus-updkepdat" class="form-control" readonly>
+                                                <input type="hidden" name="page-impmasdat" value="<?= $redirect; ?>" class="form-control" readonly>
+                                                <input type="hidden" name="office-impmasdat" value="<?= $office_id;?>" class="form-control" readonly>
+                                                <input type="hidden" name="dept-impmasdat" value="<?= $dept_id;?>" class="form-control" readonly>
                                                 <div class="col-md-12 mb-2">
-                                                    <label>Tanggal Perolehan : </label>
-                                                    <input type="date" name="tgl-updkepdat" id="tgl-updkepdat" class="form-control" required>
+                                                    <label>File : </label>
+                                                    <div class="custom-file">
+                                                        <input type="file" class="custom-file-input" name="file-impmasdat" required>
+                                                        <label class="custom-file-label">Choose file</label>
+                                                    </div>
                                                 </div>
-                                                <div class="col-md-12 mb-2">
-                                                    <label>Nomor Aktiva : </label>
-                                                    <input type="text" name="nomor-updkepdat" id="nomor-updkepdat" placeholder="Input nomor aktiva" class="form-control" required>
-                                                </div>
-                                                <div class="col-md-12 mb-2">
-                                                    <label>Qty Aktiva : </label>
-                                                    <input type="number" name="qty-updkepdat" id="qty-updkepdat" placeholder="Input qty aktiva" class="form-control" required>
-                                                </div>
-                                                <div class="col-md-12 mb-2">
-                                                    <label>Master Barang : </label>
-                                                    <select class="select2 form-control block" style="width: 100%" type="text" name="barang-updkepdat" id="barang-updkepdat" required>
-                                                        <option value="" selected disabled>Please Select</option>
-                                                        <?php 
-                                                            $sql_upd_kdat = "SELECT A.*, B.* FROM masterjenis AS A INNER JOIN mastercategory AS B ON A.IDBarang = B.IDBarang ORDER BY B.NamaBarang ASC";
-                                                            $query_upd_kdat = mysqli_query($conn, $sql_upd_kdat);
-                                                            while($dat_upd_kdat = mysqli_fetch_assoc($query_upd_kdat)) { ?>
-                                                                <option value="<?= $dat_upd_kdat['IDBarang'].$dat_upd_kdat['IDJenis']; ?>">
-                                                                    <?= $dat_upd_kdat['IDBarang'].$dat_upd_kdat['IDJenis']." - ".$dat_upd_kdat['NamaBarang']." ".$dat_upd_kdat['NamaJenis'];?>
-                                                                </option>
-                                                            <?php 
-                                                            } 
-                                                        ?>
-                                                    </select>
-                                                </div>
-                                                <?php
-                                                if ($id_group == $admin) { ?>
-                                                <div class="col-md-12 mb-2">
-                                                    <label>Status DAT : </label>
-                                                    <select class="select2 form-control block" style="width: 100%" type="text" name="status-updkepdat" id="status-updkepdat" required>
-                                                        <option value="" selected disabled>Please Select</option>
-                                                        <option value="Y">AKTIF</option>
-                                                        <option value="N">TIDAK AKTIF</option>
-                                                    </select>
-                                                </div>
-                                                <?php } ?>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
-                                            <button type="submit" name="updatedata" class="btn btn-outline-success">Update</button>
+                                            <button type="button" class="btn grey btn-outline-secondary"
+                                                data-dismiss="modal">Close</button>
+                                            <button type="submit" name="importmasterdat"
+                                                class="btn btn-outline-info">Upload</button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
                         <!-- End Modal -->
-                        <!-- Modal Delete Kepemilikan DAT -->
-                        <div class="modal fade text-left" id="modalDeleteDAT" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
+
+                        <!-- Modal Entry Master DAT -->
+                        <div class="modal fade text-left" id="modalEntryDAT">
+                            <div class="modal-dialog modal-xl" role="document">
                                 <div class="modal-content">
-                                    <form action="" method="post">
-                                        <div class="modal-header bg-danger white">
-                                            <h4 class="modal-title white">Delete Confirmation</h4>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <form action="" method="POST">
+                                    <div class="modal-header bg-primary white">
+                                        <h4 class="modal-title white">Entry Kepemilikan Data Aktiva Tetap</h4>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span>&times;</span>
+                                        </button>
+                                    </div>
+                                        <div class="modal-body">
+                                            <div class="form-group">
+                                                <input type="hidden" name="page-insmasdat" value="<?= $redirect; ?>" class="form-control" readonly>
+                                                <input type="hidden" name="office-insmasdat" value="<?= $office_id;?>" class="form-control" readonly>
+                                                <input type="hidden" name="dept-insmasdat" value="<?= $dept_id;?>" class="form-control" readonly>
+                                                <table class="table table-striped text-center">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">KODE - NAMA BARANG</th>
+                                                        <th scope="col">NOMOR AKTIVA</th>
+                                                        <th scope="col">QTY AKTIVA</th>
+                                                        <th scope="col">TANGGAL PEROLEHAN</th>
+                                                        <th><button type="button" name="add_master_aktiva" class="btn btn-success btn-xs add_master_aktiva"><i class="ft-plus"></i></button></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="table-master-aktiva">
+                                                </tbody>
+                                            </table>
+                                            </div>
+                                        </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn grey btn-outline-secondary"
+                                            data-dismiss="modal">Close</button>
+                                        <button type="submit" name="insertmasterdat"
+                                            class="btn btn-outline-primary">Save</button>
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Modal -->
+                    </div>
+                    <div class="card-body">
+                        <div class="form-row">
+                            <div class="col-md-8">
+                                <p>Filter Data Barang</p>
+                                <select class="select2 form-control block" style="width: 100%" type="text" name="barang-src" id="barang-src">
+                                    <option value="" selected disabled>Please Select</option>
+                                    <?php 
+                                        $sql = "SELECT A.*, B.* FROM masterjenis AS A INNER JOIN mastercategory AS B ON A.IDBarang = B.IDBarang ORDER BY B.NamaBarang ASC";
+                                        $query = mysqli_query($conn, $sql);
+                                        while($data = mysqli_fetch_assoc($query)) { ?>
+                                            <option value="<?= $office_id.$dept_id.$data['IDBarang'].$data['IDJenis']; ?>">
+                                                <?= $data['IDBarang'].$data['IDJenis']." - ".$data['NamaBarang']." ".$data['NamaJenis'];?>
+                                            </option>
+                                        <?php 
+                                        } 
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <p>Search</p>
+                                <input type="text" name="keyword-src" id="keyword-src" class="form-control" placeholder="Keyword">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <form action="" method="post" id="form-tabel-utama">
+                            <table class="table table-hover text-center">
+                                <thead>
+                                    <tr>
+                                        <th>NO</th>
+                                        <th>NO AKTIVA</th>
+                                        <th>TGL PEROLEHAN</th>
+                                        <th>QTY AKTIVA</th>
+                                        <th>KODE - KATEGORI BARANG</th>
+                                        <th>STATUS DAT</th>
+                                        <th>AKSI</th>
+                                        <th>CHECK</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="datatable-src">
+                                </tbody>
+                            </table>
+                            </form>
+                            <!-- Modal Update -->
+                            <div class="modal fade text-left" id="modalUpdateDAT" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <form action="" method="post">
+                                            <div class="modal-header bg-success white">
+                                                <h4 class="modal-title white" id="label-updkepdat"></h4>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="form-row">
+                                                    <input type="hidden" name="page-updkepdat" value="<?= $redirect; ?>" class="form-control" readonly>
+                                                    <input type="hidden" name="id-updkepdat" id="id-updkepdat" class="form-control" readonly>
+                                                    <input type="hidden" name="office-updkepdat" id="office-updkepdat" class="form-control" readonly>
+                                                    <input type="hidden" name="dept-updkepdat" id="dept-updkepdat" class="form-control" readonly>
+                                                    <input type="hidden" name="oldnomor-updkepdat" id="oldnomor-updkepdat" class="form-control" readonly>
+                                                    <input type="hidden" name="oldstatus-updkepdat" id="oldstatus-updkepdat" class="form-control" readonly>
+                                                    <div class="col-md-12 mb-2">
+                                                        <label>Tanggal Perolehan : </label>
+                                                        <input type="date" name="tgl-updkepdat" id="tgl-updkepdat" class="form-control" required>
+                                                    </div>
+                                                    <div class="col-md-12 mb-2">
+                                                        <label>Nomor Aktiva : </label>
+                                                        <input type="text" name="nomor-updkepdat" id="nomor-updkepdat" placeholder="Input nomor aktiva" class="form-control" required>
+                                                    </div>
+                                                    <div class="col-md-12 mb-2">
+                                                        <label>Qty Aktiva : </label>
+                                                        <input type="number" name="qty-updkepdat" id="qty-updkepdat" placeholder="Input qty aktiva" class="form-control" required>
+                                                    </div>
+                                                    <div class="col-md-12 mb-2">
+                                                        <label>Master Barang : </label>
+                                                        <select class="select2 form-control block" style="width: 100%" type="text" name="barang-updkepdat" id="barang-updkepdat" required>
+                                                            <option value="" selected disabled>Please Select</option>
+                                                            <?php 
+                                                                $sql_upd_kdat = "SELECT A.*, B.* FROM masterjenis AS A INNER JOIN mastercategory AS B ON A.IDBarang = B.IDBarang ORDER BY B.NamaBarang ASC";
+                                                                $query_upd_kdat = mysqli_query($conn, $sql_upd_kdat);
+                                                                while($dat_upd_kdat = mysqli_fetch_assoc($query_upd_kdat)) { ?>
+                                                                    <option value="<?= $dat_upd_kdat['IDBarang'].$dat_upd_kdat['IDJenis']; ?>">
+                                                                        <?= $dat_upd_kdat['IDBarang'].$dat_upd_kdat['IDJenis']." - ".$dat_upd_kdat['NamaBarang']." ".$dat_upd_kdat['NamaJenis'];?>
+                                                                    </option>
+                                                                <?php 
+                                                                } 
+                                                            ?>
+                                                        </select>
+                                                    </div>
+                                                    <?php
+                                                    if ($id_group == $admin) { ?>
+                                                    <div class="col-md-12 mb-2">
+                                                        <label>Status DAT : </label>
+                                                        <select class="select2 form-control block" style="width: 100%" type="text" name="status-updkepdat" id="status-updkepdat" required>
+                                                            <option value="" selected disabled>Please Select</option>
+                                                            <option value="Y">AKTIF</option>
+                                                            <option value="N">TIDAK AKTIF</option>
+                                                        </select>
+                                                    </div>
+                                                    <?php } ?>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" name="updatemasterdat" class="btn btn-outline-success">Update</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Modal -->
+                            <!-- Modal Delete -->
+                            <div class="modal fade text-left" id="modalDeleteDAT" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <form action="" method="post">
+                                            <div class="modal-header bg-danger white">
+                                                <h4 class="modal-title white">Delete Confirmation</h4>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="hidden" name="page-delkepdat" value="<?= $redirect; ?>" class="form-control" readonly>
+                                                <input type="hidden" name="id-delkepdat" id="id-delkepdat" class="form-control" readonly>
+                                                <input type="hidden" name="office-delkepdat" id="office-delkepdat" class="form-control" readonly>
+                                                <input type="hidden" name="dept-delkepdat" id="dept-delkepdat" class="form-control" readonly>
+                                                <input type="hidden" name="barang-delkepdat" id="barang-delkepdat" class="form-control" readonly>
+                                                <input type="hidden" name="nomor-delkepdat" id="nomor-delkepdat" class="form-control" readonly>
+                                                <label id="label-delkepdat"></label>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" name="deletemasterdat" class="btn btn-outline-danger">Delete</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Modal -->
+                            <!-- Modal Update By Check -->
+                            <div class="modal fade text-left" id="updatebrgcheck" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-xl" role="document">
+                                    <div class="modal-content">
+                                    <form action="" method="post" id="form-updatecheck">
+                                        <div class="modal-header bg-primary white">
+                                            <h4 class="modal-title white"
+                                                id="myModalLabel">Update Master DAT Multiple</h4>
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <input type="hidden" name="page-delkepdat" value="<?= $redirect; ?>" class="form-control" readonly>
-                                            <input type="hidden" name="id-delkepdat" id="id-delkepdat" class="form-control" readonly>
-                                            <input type="hidden" name="office-delkepdat" id="office-delkepdat" class="form-control" readonly>
-                                            <input type="hidden" name="dept-delkepdat" id="dept-delkepdat" class="form-control" readonly>
-                                            <input type="hidden" name="barang-delkepdat" id="barang-delkepdat" class="form-control" readonly>
-                                            <input type="hidden" name="nomor-delkepdat" id="nomor-delkepdat" class="form-control" readonly>
-                                            <label id="label-delkepdat"></label>
+                                            <input type="hidden" name="page-chkbarang" value="<?= $redirect; ?>" class="form-control" readonly>
+                                            <input type="hidden" name="office-chkbarang" value="<?= $office_id; ?>" class="form-control" readonly>
+                                            <input type="hidden" name="dept-chkbarang" value="<?= $dept_id; ?>" class="form-control" readonly>
+                                            <div class="form-row" id="table-edtbarang-check">
+                                            </div>
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
-                                            <button type="submit" name="deletedata" class="btn btn-outline-danger">Delete</button>
+                                            <button type="submit" name="updatecheckmasterdat" class="btn btn-outline-primary">Update</button>
                                         </div>
                                     </form>
+                                    </div>
                                 </div>
                             </div>
+                            <!-- End Modal -->
+                            <!-- Modal Delete By Check -->
+                            <div class="modal fade text-left" id="deletebrgcheck" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-xl" role="document">
+                                    <div class="modal-content">
+                                    <form action="" method="post" id="form-deletecheck">
+                                        <div class="modal-header bg-danger white">
+                                            <h4 class="modal-title white"
+                                                id="myModalLabel">Delete Master DAT Multiple</h4>
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="hidden" name="page-chkbarang" value="<?= $redirect; ?>" class="form-control" readonly>
+                                            <input type="hidden" name="office-chkbarang" value="<?= $office_id; ?>" class="form-control" readonly>
+                                            <input type="hidden" name="dept-chkbarang" value="<?= $dept_id; ?>" class="form-control" readonly>
+                                            <div class="form-row" id="table-dltbarang-check">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn grey btn-outline-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" name="deletecheckmasterdat" class="btn btn-outline-danger">Delete</button>
+                                        </div>
+                                    </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Modal -->
+                            <!-- <button type="button" title="Edit With Checkbox" onclick="return validateForm();" class="btn btn-primary btn-min-width mt-1 mb-2 pull-right">Edit By Checkbox</button> -->
+                            <!-- Button dropdowns with icons -->
+                            <div class="btn-group mt-1 mb-2 pull-right">
+                                <button type="button" class="btn btn-primary btn-min-width dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Change Multiple Data</button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" onclick="return validateForm('EDIT');" href="#">Update Data</a>
+                                    <?php if ($id_group == $admin) { ?>
+                                <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" onclick="return validateForm('DELETE');" href="#">Delete Data</a>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                            <!-- /btn-group -->
                         </div>
-                        <!-- End Modal -->
                     </div>
                 </div>
             </div>
@@ -327,6 +402,72 @@ elseif(isset($_POST["uploaddata"])){
 <!--/ Auto Fill table -->
 
 <script>
+$(document).ready(function(){
+
+    var count = 0;
+
+    $(document).on('click', '.add_master_aktiva', function(){
+        count++;
+        var html = '';
+        html += '<tr>';
+        html += '<td><select type="text" name="desc_master_aktiva[]" class="select2 form-control block desc_master_aktiva" style="width: 100%" required><option value="" selected disabled>Please Select</option><?= fill_select_pp(); ?></select></td>';
+        html += '<td><input type="text" name="at_master_aktiva[]" class="form-control at_master_aktiva" placeholder="Input Nomor Aktiva" required/></td>';
+        html += '<td><input type="number" min="1" step="1" name="qty_master_aktiva[]" class="form-control qty_master_aktiva" placeholder="Input Jumlah Qty Barang" required/></td>';
+        html += '<td><input type="date" name="dok_master_aktiva[]" class="form-control dok_master_aktiva" placeholder="Input Tanggal Dokumen Aktif" required/></td>';
+        html += '<td><button type="button" name="remove_master_aktiva" class="btn btn-danger btn-xs remove_master_aktiva"><i class="ft-minus"></i></button></td>';
+        $('#table-master-aktiva').append(html);
+
+        $(".select2").select2();
+
+    });
+
+    $(document).on('click', '.remove_master_aktiva', function(){
+        $(this).closest('tr').remove();
+    });
+});
+
+$(document).ready(function(){
+    load_data();
+    function load_data(barang, keyword) {
+        $.ajax({
+            type:"POST",
+            url:"action/datarequest.php",
+            data: {MASBARANGSRC: barang, MASKEYSRC:keyword},
+            beforeSend: function() {
+                hideSpinner();
+                showSpinner();
+            },
+            success:function(hasil) {
+                $('.datatable-src').html(hasil);
+            },
+            complete: function() {
+                $('.icheck1 input').iCheck({
+                    checkboxClass: 'icheckbox_square-blue',
+                });
+            }
+        });
+    }
+    $('#keyword-src').keyup(function(){
+        var barang = $("#barang-src").val();
+        var keyword = $("#keyword-src").val();
+        load_data(barang, keyword);
+    });
+    $('#barang-src').change(function(){
+        $("#keyword-src").val('');
+        var barang = $("#barang-src").val();
+        var keyword = $("#keyword-src").val();
+        load_data(barang, keyword);
+    });
+    function hideSpinner() {
+        $('.datatable-src').html("");
+        if($(document).find('#loadbarang-spinner').length > 0) {
+            $(document).find('#loadbarang-spinner').remove();
+        }
+    }
+    function showSpinner() {
+        $('.datatable-src').append('<tr><td colspan="6"><i id="loadbarang-spinner" class="la la-spinner spinner"></i></td></tr>');
+    }
+});
 
 $(document).ready(function(){
     $(document).on('click', '.update_kep_dat', function(){  
@@ -380,6 +521,37 @@ $(document).ready(function(){
         });
     });
 });
+
+function validateForm(aksi) {
+    var count_checked = $('input[name="checkidmasdat[]"]:checked');
+    if (count_checked.length == 0) {
+        alert("Please check at least one checkbox");
+        return false;
+    }
+    else {
+        var groupid = "<?= $id_group; ?>"
+        var offdep = "<?= $office_id.$dept_id; ?>"
+        var array = []
+        for (var i = 0; i < count_checked.length; i++) {
+            array.push(count_checked[i].value)
+        }
+        $.ajax({
+            type:'POST',
+            url:'action/datarequest.php',
+            data: {IDMASDATMULTIPLE:array, GROUPMASDATMULTIPLE:groupid, OFFDEPMASDATMULTIPLE:offdep, AKSIMASDATMULTIPLE:aksi},
+            success:function(data){
+                if (aksi == "EDIT") {
+                    $('#table-edtbarang-check').html(data);
+                    $('#updatebrgcheck').modal('show');
+                }
+                else if (aksi == "DELETE") {
+                    $('#table-dltbarang-check').html(data);
+                    $('#deletebrgcheck').modal('show');
+                }
+            }
+        });
+    }
+}
 </script>
 
 <?php

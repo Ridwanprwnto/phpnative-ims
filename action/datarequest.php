@@ -4090,6 +4090,215 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
     }
 
+    if(isset($_POST["IDMASDATMULTIPLE"]) && !empty($_POST["IDMASDATMULTIPLE"]) && isset($_POST["GROUPMASDATMULTIPLE"]) && !empty($_POST["GROUPMASDATMULTIPLE"]) && isset($_POST["OFFDEPMASDATMULTIPLE"]) && !empty($_POST["OFFDEPMASDATMULTIPLE"]) && isset($_POST["AKSIMASDATMULTIPLE"]) && !empty($_POST["AKSIMASDATMULTIPLE"])){
+
+        //Get all data
+        $iddat = $_POST['IDMASDATMULTIPLE'];
+        $group = $_POST['GROUPMASDATMULTIPLE'];
+        $office = substr($_POST['OFFDEPMASDATMULTIPLE'], 0, 4);
+        $dept = substr($_POST['OFFDEPMASDATMULTIPLE'], 4, 4);
+        $aksi = $_POST['AKSIMASDATMULTIPLE'];
+        $strid = implode(", ", $iddat);
+        
+        $no = 1;
+        $sql = "SELECT A.*, B.NamaBarang, C.NamaJenis FROM dat AS A
+        INNER JOIN mastercategory AS B ON LEFT(A.pluid_dat, 6) = B.IDBarang
+        INNER JOIN masterjenis AS C ON RIGHT(A.pluid_dat, 4) = C.IDJenis
+        WHERE A.id_dat IN ($strid)";
+        $query_head = mysqli_query($conn, $sql);
+
+        if ($query_head) {
+            $data_head = mysqli_fetch_assoc($query_head);
+            $desc = $data_head['pluid_dat']." - ".$data_head['NamaBarang']." ".$data_head['NamaJenis'];
+        ?>
+        <div class="col-md-12 mb-2">
+            <table class="table table-striped text-center">
+                <thead>
+                    <tr>
+                        <th>NO</th>
+                        <th>NO AKTIVA</th>
+                        <th>TGL PEROLEHAN</th>
+                        <th>QTY AKTIVA</th>
+                        <th>KODE - KATEGORI BARANG</th>
+                        <?php if ($group == $arrgroup[0]) { ?>
+                        <th>STATUS DAT</th>
+                        <?php } ?>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                    $result = array();
+                    $query_detail = mysqli_query($conn, $sql);
+                    while($data_detail = mysqli_fetch_assoc($query_detail)) {
+                        $result[] = $data_detail;
+                    }
+                    foreach ($result as $rows) {
+                    ?>
+                        <tr>
+                            <td>
+                                <input type="hidden" name="id_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= $rows['id_dat']; ?>" class="form-control" readonly/>
+                                <input type="hidden" name="datold_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= $rows['no_dat']; ?>" class="form-control" readonly/>
+                                <span><?= $no++; ?></span>
+                            </td>
+                            <td>
+                                <input type="<?= $aksi == "EDIT" ? "text" : "hidden"; ?>" name="dat_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= $rows['no_dat']; ?>" placeholder="Input Nomor Aktiva" class="form-control" required/>
+                                <?= $aksi == "EDIT" ? "" : "<span>".$rows['no_dat']."</span>"; ?>
+                            </td>
+                            <td>
+                                <input type="<?= $aksi == "EDIT" ? "date" : "hidden"; ?>" name="tgl_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= $rows['perolehan_dat']; ?>" placeholder="Input Tanggal Perolehan" class="form-control" required/>
+                                <?= $aksi == "EDIT" ? "" : "<span>".$rows['perolehan_dat']."</span>"; ?>
+                            </td>
+                            <td>
+                                <input type="<?= $aksi == "EDIT" ? "number" : "hidden"; ?>" min="1" step="1" name="qty_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= $rows['qty_dat']; ?>" class="form-control" placeholder="Input Qty Aktiva" required/>
+                                <?= $aksi == "EDIT" ? "" : "<span>".$rows['qty_dat']."</span>"; ?>
+                            </td>
+                            <td>
+                                <?php
+                                if ($aksi == "EDIT") {
+                                ?>
+                                <select type="text" name="barang_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" class="form-control">
+                                    <option value="" selected disabled>Please Select</option>
+                                    <?php
+                                        $sql_brg = "SELECT A.*, B.* FROM masterjenis AS A INNER JOIN mastercategory AS B ON A.IDBarang = B.IDBarang ORDER BY B.NamaBarang ASC";
+                                        $query_brg = mysqli_query($conn, $sql_brg);
+                                        while($data_brg = mysqli_fetch_assoc($query_brg)) { ?>
+                                        <option value="<?=  $data_brg['IDBarang'].$data_brg['IDJenis']; ?>" <?= $data_brg['IDBarang'].$data_brg['IDJenis'] == $rows['pluid_dat'] ? 'selected' : ''; ?> ><?= $data_brg['IDBarang'].$data_brg['IDJenis']." - ".$data_brg['NamaBarang']." ".$data_brg["NamaJenis"]; ?></option>
+                                    <?php 
+                                        }
+                                    ?>
+                                </select>
+                                <?php
+                                }
+                                elseif ($aksi == "DELETE") {
+                                ?>                                        
+                                    <span><?= $rows['pluid_dat']." - ".$rows['NamaBarang']." ".$rows["NamaJenis"]; ?></span>
+                                <?php
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                if ($group == $arrgroup[0]) {
+                                    if ($aksi == "EDIT") {
+                                    ?>
+                                    <select type="text" name="status_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" class="form-control">
+                                        <option value="" selected disabled>Please Select</option>
+                                        <?php
+                                            $status = array('Y', 'N');
+                                            foreach ($status as $s) {
+                                        ?>
+                                            <option value="<?= $s; ?>" <?= $rows['status_dat'] == $s ? 'selected' : ''; ?>><?= $s == "Y" ? 'AKTIF' : 'NON AKTIF'; ?></option>
+                                        <?php
+                                            }
+                                        ?>
+                                    </select>
+                                    <?php
+                                    }
+                                    elseif ($aksi == "DELETE") {
+                                    ?>
+                                        <div class="badge badge-<?= $rows['status_dat'] == "Y" ? "info" : "danger"; ?> label-square">
+                                            <i class="ft-info font-medium-2"></i>
+                                            <span><?= $rows['status_dat'] == "Y" ? "AKTIF" : "NON AKTIF"; ?></span>
+                                        </div>
+                                    <?php
+                                    }
+                                }
+                                ?>
+                            </td>
+                        </tr>
+                    <?php
+                    }
+                ?>
+                </tbody>
+            </table>
+        </div>
+        <?php                                                          
+        } 
+        else { 
+        ?>
+            <tr>
+                <td colspan='6'>No data available in table</td>
+            </tr>
+        <?php
+        }
+    }
+
+    if(isset($_POST["MASBARANGSRC"]) && !empty($_POST["MASBARANGSRC"]) || isset($_POST["MASKEYSRC"]) && !empty($_POST["MASKEYSRC"])){
+
+        //Get all data
+        $data = $_POST['MASBARANGSRC'];
+
+        $office = substr($data, 0, 4);
+        $dept = substr($data, 4, 4);
+        $barangid = substr($data, 8);
+
+        $keyid = $_POST['MASKEYSRC'];
+
+        $s_key = '%'. $keyid .'%';
+        
+        $no = 1;
+        $sql = "SELECT A.*, B.NamaBarang, C.NamaJenis, D.office_name, E.department_name FROM dat AS A
+        INNER JOIN mastercategory AS B ON LEFT(A.pluid_dat, 6) = B.IDBarang
+        INNER JOIN masterjenis AS C ON RIGHT(A.pluid_dat, 4) = C.IDJenis
+        INNER JOIN office AS D ON A.office_dat = D.id_office
+        INNER JOIN department AS E ON A.dept_dat = E.id_department
+        WHERE A.office_dat = '$office' AND A.dept_dat = '$dept' AND A.pluid_dat = '$barangid' AND (A.pluid_dat LIKE ? OR B.NamaBarang LIKE ? OR C.NamaJenis LIKE ? OR A.no_dat LIKE ?)";
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "ssss", $s_key, $s_key, $s_key, $s_key);
+        mysqli_stmt_execute($stmt);
+
+        // cek hasil query
+        if (!$stmt) {
+            die('Query Error : '.mysqli_errno($conn).' - '.mysqli_error($conn));
+        }
+        
+        // ambil hasil query
+        $result = mysqli_stmt_get_result($stmt);
+
+        $rowCount = mysqli_num_rows($result);
+        if ($rowCount > 0) {
+            while ($data = mysqli_fetch_assoc($result)) { ?>
+                
+                <tr>
+                    <th scope="row"><?= $no++; ?></th>
+                    <td><?= $data["no_dat"];?></td>
+                    <td><?= $data["perolehan_dat"];?></td>
+                    <td><?= $data["qty_dat"];?></td>
+                    <td><?= $data["pluid_dat"]." - ".$data["NamaBarang"].' '.$data["NamaJenis"];?></td>
+                    <td>
+                        <div class="badge badge-<?= $data['status_dat'] == "Y" ? "info" : "danger"; ?> label-square">
+                            <i class="ft-info font-medium-2"></i>
+                            <span><?= $data['status_dat'] == "Y" ? "AKTIF" : "NON AKTIF"; ?></span>
+                        </div>
+                    </td>
+                    <td>
+                        <!-- Icon Button dropdowns -->
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="ft-menu"></i></button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item update_kep_dat" href="javascript:void(0)" title="Update Data Aktiva <?= $data['no_dat']; ?>" name="update_kep_dat" id="<?= $data["id_dat"]; ?>" data-toggle="tooltip" data-placement="bottom">Edit Data</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item delete_kep_dat" href="javascript:void(0)" title="Delete Data Aktiva <?= $data['no_dat']; ?>" name="delete_kep_dat" id="<?= $data["id_dat"]; ?>" data-toggle="tooltip" data-placement="bottom">Delete Data</a>
+                            </div>
+                        </div>
+                        <!-- /btn-group -->
+                    </td>
+                    <td class="icheck1">
+                    <input type="checkbox" name="checkidmasdat[]" id="checkidmasdat" class="checkidmasdat" value="<?= $data['id_dat']; ?>">
+                    </td>
+                </tr>
+                
+            <?php }
+        }
+        else { 
+        ?>
+            <tr>
+                <td colspan='8'>No data available in table</td>
+            </tr>
+        <?php
+        }
+    }
+
 }
 else {
     echo json_encode(['status' => 'error', 'message' => 'Metode tidak diizinkan.']);
