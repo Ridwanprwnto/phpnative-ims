@@ -6,10 +6,42 @@ require '../includes/config/timezone.php';
 require '../includes/function/func.php';
 require '../includes/config/conn.php';
 
-// memanggil data POST
-$office = $_POST["office-cetak"];
-$dept = $_POST["dept-cetak"];
-$submitpost = $_POST['exportdata'];
+$id = $_GET["id"];
+
+if(isset($_GET["id"])) {
+    if($_GET["id"] === $id) {
+        $strplus = rplplus($id);
+        $decid = mysqli_real_escape_string($conn, decrypt($strplus));
+        if($decid == true) {
+            $sql = "SELECT dat.*, office.*, department.* FROM dat
+            INNER JOIN office ON dat.office_dat = office.id_office
+            INNER JOIN department ON dat.dept_dat = department.id_department
+            WHERE dat.office_dat = LEFT('$decid', 4) AND dat.dept_dat = RIGHT('$decid', 4) ORDER BY dat.no_dat ASC";
+            $query_h = mysqli_query($conn, $sql);
+            $header = mysqli_fetch_assoc($query_h);
+            if(!$header || empty($header)) {
+                $msg = encrypt("datanotfound");
+                header("location: ../error.php?alert=$msg");
+                exit();
+            }
+        }
+        else {
+            $msg = encrypt("print-error");
+            header("location: ../error.php?alert=$msg");
+            exit();
+        }
+    }
+    else {
+        $msg = encrypt("print-error");
+        header("location: ../error.php?alert=$msg");
+        exit();
+    }
+}
+else {
+    $msg = encrypt("print-error");
+    header("location: ../error.php?alert=$msg");
+    exit();
+}
     
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Csv;
@@ -32,32 +64,20 @@ $sheet->setCellValue('C1', 'QTY AKTIVA');
 $sheet->setCellValue('D1', 'KODE BARANG');
 
 $row = 2;
-if (isset($submitpost)) {
-    
-    $sql = "SELECT dat.*, office.*, department.* FROM dat
-    INNER JOIN office ON dat.office_dat = office.id_office
-    INNER JOIN department ON dat.dept_dat = department.id_department
-    WHERE dat.office_dat = '$office ' AND dat.dept_dat = '$dept' ORDER BY dat.no_dat ASC";
 
-    $query = mysqli_query($conn, $sql);
-    if(mysqli_num_rows($query) > 0 ) {
+$query = mysqli_query($conn, $sql);
+if(mysqli_num_rows($query) > 0 ) {
 
-        while($data = mysqli_fetch_assoc($query)){
-            $sheet->setCellValue('A'.$row, $data["no_dat"]);
-            $sheet->setCellValue('B'.$row, $data["perolehan_dat"]);
-            $sheet->setCellValue('C'.$row, $data["qty_dat"]);
-            $sheet->setCellValue('D'.$row, $data["pluid_dat"]);
-            $row++;
-        }
-    }
-    else {
-        $msg = encrypt("datanotfound");
-        header("location: ../error.php?alert=$msg");
-        exit();
+    while($data = mysqli_fetch_assoc($query)){
+        $sheet->setCellValue('A'.$row, $data["no_dat"]);
+        $sheet->setCellValue('B'.$row, $data["perolehan_dat"]);
+        $sheet->setCellValue('C'.$row, $data["qty_dat"]);
+        $sheet->setCellValue('D'.$row, $data["pluid_dat"]);
+        $row++;
     }
 }
 else {
-    $msg = encrypt("print-error");
+    $msg = encrypt("datanotfound");
     header("location: ../error.php?alert=$msg");
     exit();
 }

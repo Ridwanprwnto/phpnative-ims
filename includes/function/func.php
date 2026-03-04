@@ -7605,28 +7605,55 @@ function InsertMasterDAT($data) {
     global $conn;
 
     // Input data post
-    $page = $data["page-dat"];
-    $office = htmlspecialchars($data["office-dat"]);
-    $dept = htmlspecialchars($data["dept-dat"]);
-    $perolehan = htmlspecialchars($data["perolehan-dat"]);
-    $nomor = htmlspecialchars($data["nomor-dat"]);
-    $qty = htmlspecialchars($data["qty-dat"]);
-    $barang = htmlspecialchars($data["barang-dat"]);
+    $page = $data["page-insmasdat"];
+    $office = htmlspecialchars($data["office-insmasdat"]);
+    $dept = htmlspecialchars($data["dept-insmasdat"]);
 
-    // Check pluid di database
-    $result = mysqli_query($conn, "SELECT no_dat FROM dat WHERE office_dat = '$office' AND dept_dat = '$dept' AND no_dat = '$nomor' AND pluid_dat = '$barang'");
-
-    if(mysqli_num_rows($result) === 1) {
-
-        $GLOBALS['alert'] = array("Gagal!", "Nomor Aktiva ".$nomor." Sudah Terdaftar", "error", "$page");
+    if (!isset($data["desc_master_aktiva"])) {
+        $GLOBALS['alert'] = array("Gagal!", "Belum ada data barang yang dipilih", "error", "$page");
         return false;
+    }
+
+    if(count(array_unique($data["at_master_aktiva"], SORT_REGULAR)) < count($data["at_master_aktiva"])) {
+        $GLOBALS['alert'] = array("Gagal!", "Terdapat duplicate nomor aktiva", "error", "$page");
+        return false;
+    }
+
+    $final = array();
+
+    for($countcek = 0; $countcek < count($data["desc_master_aktiva"]); $countcek++) {
+
+        $arrcek = array(
+            $aktiva = htmlspecialchars(strtoupper($data["at_master_aktiva"][$countcek])),
+            htmlspecialchars($data["dok_master_aktiva"][$countcek]),
+            htmlspecialchars($data["qty_master_aktiva"][$countcek]),
+            $pluid = substr($data["desc_master_aktiva"][$countcek], 0, 10)
+        );
+
+        if (strlen($aktiva) != 10) { 
+            $GLOBALS['alert'] = array("Gagal!", "Terdapat kesalahan penginputan data aktiva barang ".$aktiva, "error", "$page");
+            return false;
+        }
+
+        $query_checkdat = mysqli_query($conn, "SELECT no_dat FROM dat WHERE office_dat = '$office' AND dept_dat = '$dept' AND no_dat = '$aktiva' AND pluid_dat = '$pluid'");
+        $data_checkdat = mysqli_fetch_assoc($query_checkdat);
+
+        if($data_checkdat) {
+            $GLOBALS['alert'] = array("Gagal!", "Barang ".$pluid." Aktiva ".$aktiva." sudah terdaftar", "error", "$page");
+            return false;
+        }
+
+        $final[] = $arrcek;
+    }
+
+    foreach ($final as $rows) {
+
+        mysqli_query($conn, "INSERT INTO dat (office_dat, dept_dat, no_dat, perolehan_dat, qty_dat, pluid_dat) VALUES ('$office', '$dept', '$rows[0]', '$rows[1]', '$rows[2]', '$rows[3]')");
 
     }
 
-    $sql = "INSERT INTO dat (office_dat, dept_dat, no_dat, perolehan_dat, qty_dat, pluid_dat) VALUES ('$office', '$dept', '$nomor', '$perolehan', '$qty', '$barang')";
-    mysqli_query($conn, $sql);
-
     return mysqli_affected_rows($conn);
+
 }   
 // End function
 
@@ -7658,6 +7685,11 @@ function UpdateMasterDAT($data) {
             return false;
         }
 
+    }
+
+    if (strlen($nomor) != 10) { 
+        $GLOBALS['alert'] = array("Gagal!", "Terdapat kesalahan penginputan data aktiva barang ".$nomor, "error", "$page");
+        return false;
     }
 
     mysqli_query($conn, "UPDATE dat SET perolehan_dat = '$perolehan', no_dat = '$nomor', qty_dat = '$qty', pluid_dat = '$barang', status_dat = '$status' WHERE id_dat = '$id'");
@@ -7697,19 +7729,122 @@ function DeleteMasterDAT($data) {
 
 // ---------------------------- //
 
+// function Update Master DAT By Check
+function UpdateCheckMasterDAT($data) {
+
+    global $conn;
+
+    // Input data post
+    $page = $data["page-chkbarang"];
+    $office = htmlspecialchars($data["office-chkbarang"]);
+    $dept = htmlspecialchars($data["dept-chkbarang"]);
+    
+    if (!isset($data["barang_edit_check"])) {
+        $GLOBALS['alert'] = array("Gagal!", "Belum ada data barang yang dipilih", "error", "$page");
+        return false;
+    }
+
+    if(count(array_unique($data["dat_edit_check"], SORT_REGULAR)) < count($data["dat_edit_check"])) {
+        $GLOBALS['alert'] = array("Gagal!", "Terdapat duplicate nomor aktiva", "error", "$page");
+        return false;
+    }
+
+    $result = array();
+    for($countarr = 0; $countarr < count($data["barang_edit_check"]); $countarr++) {
+
+        $datold = $data["datold_edit_check"][$countarr];
+        $dat = strtoupper($data["dat_edit_check"][$countarr]);
+        $pluid = $data["barang_edit_check"][$countarr];
+
+        $arrcek = array(
+            $data["id_edit_check"][$countarr],
+            $dat,
+            $data["tgl_edit_check"][$countarr],
+            $data["qty_edit_check"][$countarr],
+            $pluid,
+            $data["status_edit_check"][$countarr],
+        );
+
+        if ($dat !== $datold) {
+            $query_dat_cek = mysqli_query($conn, "SELECT no_dat FROM dat WHERE office_dat = '$office' AND dept_dat = '$dept' AND pluid_dat = '$pluid' AND no_dat = '$dat'");
+
+            if(mysqli_num_rows($query_dat_cek) > 0 ) {
+                
+                $GLOBALS['alert'] = array("Gagal!", "Nomor Aktiva ".$dat." Sudah Terdaftar", "error", "$page");
+                return false;
+            }
+        }
+        
+        if (strlen($dat) != 10) { 
+            $GLOBALS['alert'] = array("Gagal!", "Terdapat kesalahan penginputan data aktiva barang ".$dat, "error", "$page");
+            return false;
+        }
+
+        $result[] = $arrcek;
+    }
+    
+    foreach ($result as $rows) {
+
+        mysqli_query($conn, "UPDATE dat SET perolehan_dat = '$rows[2]', no_dat = '$rows[1]', qty_dat = '$rows[3]', pluid_dat = '$rows[4]', status_dat = '$rows[5]' WHERE id_dat = '$rows[0]'");
+        
+    }
+
+    return mysqli_affected_rows($conn);
+}
+// End function
+
+// ---------------------------- //
+
+// function Delete Master DAT By Check
+function DeleteCheckMasterDAT($data) {
+
+    global $conn;
+
+    $page = $data["page-chkbarang"];
+    $office = htmlspecialchars($data["office-chkbarang"]);
+    $dept = htmlspecialchars($data["dept-chkbarang"]);
+    $id = $data["id_delete_check"];
+
+    for($countarr = 0; $countarr < count($id); $countarr++) {
+
+        $id_dat = $id[$countarr];
+        
+        $query_check = mysqli_query($conn, "SELECT no_dat FROM dat WHERE id_dat = '$id_dat'");
+        $data_check = mysqli_fetch_assoc($query_check);
+        $no_dat = $data_check["no_dat"];
+
+        $query = mysqli_query($conn, "SELECT no_at FROM barang_assets WHERE LEFT(dat_asset, 4) = '$office' AND RIGHT(dat_asset, 4) = '$dept' AND no_at = '$no_dat'");
+
+        if(mysqli_num_rows($query) > 0 ) {
+            
+            $GLOBALS['alert'] = array("Gagal!", "Nomor Aktiva ".$no_dat." telah terdaftar di master barang inventaris", "error", "$page");
+            return false;
+        }
+        
+        mysqli_query($conn, "DELETE FROM dat WHERE id_dat = '$id_dat'");
+
+    }
+
+    return mysqli_affected_rows($conn);
+    
+}
+// End function
+
+// ---------------------------- //
+
 // Function upload csv master dat
 function UploadMasterDAT($data) {
 
     global $conn;
 
-    $page = mysqli_real_escape_string($conn, $data["page"]);
-    $office = htmlspecialchars(mysqli_real_escape_string($conn, $_POST["office"]));
-    $dept = htmlspecialchars(mysqli_real_escape_string($conn, $_POST["dept"]));
+    $page = mysqli_real_escape_string($conn, $data["page-impmasdat"]);
+    $office = htmlspecialchars(mysqli_real_escape_string($conn, $_POST["office-impmasdat"]));
+    $dept = htmlspecialchars(mysqli_real_escape_string($conn, $_POST["dept-impmasdat"]));
 
-    $name  = $_FILES["file-import"]["name"];
-    $size  = $_FILES["file-import"]["size"];
-    $error = $_FILES["file-import"]["error"];
-    $tmp   = $_FILES["file-import"]["tmp_name"];
+    $name  = $_FILES["file-impmasdat"]["name"];
+    $size  = $_FILES["file-impmasdat"]["size"];
+    $error = $_FILES["file-impmasdat"]["error"];
+    $tmp   = $_FILES["file-impmasdat"]["tmp_name"];
 
     if ($error === 4) {
 

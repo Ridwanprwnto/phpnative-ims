@@ -30,7 +30,6 @@ $redirect = "index.php?page=".$encpid;
                 </div>
                 <div class="card-content collapse show">
                     <div class="card-body">
-                    
                     </div>
                 </div>
             </div>
