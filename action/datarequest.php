@@ -4138,6 +4138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <td>
                                 <input type="hidden" name="id_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= $rows['id_dat']; ?>" class="form-control" readonly/>
                                 <input type="hidden" name="datold_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= $rows['no_dat']; ?>" class="form-control" readonly/>
+                                <input type="hidden" name="statusold_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= $rows['status_dat']; ?>" class="form-control" readonly/>
                                 <span><?= $no++; ?></span>
                             </td>
                             <td>
@@ -4176,9 +4177,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 }
                                 ?>
                             </td>
+                            <?php
+                            if ($group == $arrgroup[0]) { ?>
                             <td>
                                 <?php
-                                if ($group == $arrgroup[0]) {
                                     if ($aksi == "EDIT") {
                                     ?>
                                     <select type="text" name="status_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" class="form-control">
@@ -4202,9 +4204,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </div>
                                     <?php
                                     }
-                                }
                                 ?>
                             </td>
+                            <?php
+                            }
+                            ?>
                         </tr>
                     <?php
                     }
@@ -4217,7 +4221,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         else { 
         ?>
             <tr>
+                <?php if ($group == $arrgroup[0]) { ?>
                 <td colspan='6'>No data available in table</td>
+                <?php } else { ?>
+                <td colspan='5'>No data available in table</td>
+                <?php } ?>
             </tr>
         <?php
         }

@@ -7762,7 +7762,7 @@ function UpdateCheckMasterDAT($data) {
             $data["tgl_edit_check"][$countarr],
             $data["qty_edit_check"][$countarr],
             $pluid,
-            $data["status_edit_check"][$countarr],
+            isset($data["status_edit_check"][$countarr]) ? $data["status_edit_check"][$countarr] : $data["statusold_edit_check"][$countarr],
         );
 
         if ($dat !== $datold) {
