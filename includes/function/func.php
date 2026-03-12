@@ -7713,11 +7713,11 @@ function DeleteMasterDAT($data) {
     $nomor = htmlspecialchars($data["nomor-delkepdat"]);
     $barang = htmlspecialchars($data["barang-delkepdat"]);
 
-    $query = mysqli_query($conn, "SELECT no_at FROM barang_assets WHERE LEFT(dat_asset, 4) = '$office' AND RIGHT(dat_asset, 4) = '$dept' AND no_at = '$nomor'");
+    $query = mysqli_query($conn, "SELECT no_at FROM barang_assets WHERE LEFT(dat_asset, 4) = '$office' AND RIGHT(dat_asset, 4) = '$dept' AND no_at = '$nomor' AND pluid = '$barang'");
 
     if(mysqli_num_rows($query) > 0 ) {
         
-        $GLOBALS['alert'] = array("Gagal!", "Nomor Aktiva ".$nomor." telah terdaftar di master barang inventaris", "error", "$page");
+        $GLOBALS['alert'] = array("Gagal!", "Nomor Aktiva ".$nomor." telah terdaftar di master barang inventaris ".$barang, "error", "$page");
         return false;
     }
    
@@ -7809,15 +7809,16 @@ function DeleteCheckMasterDAT($data) {
 
         $id_dat = $id[$countarr];
         
-        $query_check = mysqli_query($conn, "SELECT no_dat FROM dat WHERE id_dat = '$id_dat'");
+        $query_check = mysqli_query($conn, "SELECT no_dat, pluid_dat FROM dat WHERE id_dat = '$id_dat'");
         $data_check = mysqli_fetch_assoc($query_check);
         $no_dat = $data_check["no_dat"];
+        $brg_dat = $data_check["pluid_dat"];
 
-        $query = mysqli_query($conn, "SELECT no_at FROM barang_assets WHERE LEFT(dat_asset, 4) = '$office' AND RIGHT(dat_asset, 4) = '$dept' AND no_at = '$no_dat'");
+        $query = mysqli_query($conn, "SELECT no_at FROM barang_assets WHERE LEFT(dat_asset, 4) = '$office' AND RIGHT(dat_asset, 4) = '$dept' AND no_at = '$no_dat' AND pluid = '$brg_dat'");
 
         if(mysqli_num_rows($query) > 0 ) {
             
-            $GLOBALS['alert'] = array("Gagal!", "Nomor Aktiva ".$no_dat." telah terdaftar di master barang inventaris", "error", "$page");
+            $GLOBALS['alert'] = array("Gagal!", "Nomor Aktiva ".$no_dat." telah terdaftar di master barang inventaris ".$brg_dat, "error", "$page");
             return false;
         }
         
