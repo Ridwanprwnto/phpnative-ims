@@ -4236,9 +4236,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         //Get all data
         $data = $_POST['MASBARANGSRC'];
 
-        $office = substr($data, 0, 4);
-        $dept = substr($data, 4, 4);
-        $barangid = substr($data, 8);
+        $group = substr($data, 0, 4);
+        $office = substr($data, 4, 4);
+        $dept = substr($data, 8, 4);
+        $barangid = substr($data, 12);
 
         $keyid = $_POST['MASKEYSRC'];
 
@@ -4285,8 +4286,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <button type="button" class="btn btn-icon btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="ft-menu"></i></button>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item update_kep_dat" href="javascript:void(0)" title="Update Data Aktiva <?= $data['no_dat']; ?>" name="update_kep_dat" id="<?= $data["id_dat"]; ?>" data-toggle="tooltip" data-placement="bottom">Edit Data</a>
+                                <?php if ($group == $arrgroup[0]) { ?>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item delete_kep_dat" href="javascript:void(0)" title="Delete Data Aktiva <?= $data['no_dat']; ?>" name="delete_kep_dat" id="<?= $data["id_dat"]; ?>" data-toggle="tooltip" data-placement="bottom">Delete Data</a>
+                                <?php } ?>
                             </div>
                         </div>
                         <!-- /btn-group -->

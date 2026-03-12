@@ -189,7 +189,7 @@ elseif(isset($_POST["deletecheckmasterdat"])){
                                         $sql = "SELECT A.*, B.* FROM masterjenis AS A INNER JOIN mastercategory AS B ON A.IDBarang = B.IDBarang ORDER BY B.NamaBarang ASC";
                                         $query = mysqli_query($conn, $sql);
                                         while($data = mysqli_fetch_assoc($query)) { ?>
-                                            <option value="<?= $office_id.$dept_id.$data['IDBarang'].$data['IDJenis']; ?>">
+                                            <option value="<?= $id_group.$office_id.$dept_id.$data['IDBarang'].$data['IDJenis']; ?>">
                                                 <?= $data['IDBarang'].$data['IDJenis']." - ".$data['NamaBarang']." ".$data['NamaJenis'];?>
                                             </option>
                                         <?php 
