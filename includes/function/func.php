@@ -5460,7 +5460,6 @@ function ProsesBKSE($data) {
     $penempatan = mysqli_real_escape_string($conn, strtoupper($data["penempatan-bkse"]));
     $kerusakan = mysqli_real_escape_string($conn, strtoupper($data["kerusakan-bkse"]));
     $posisi = mysqli_real_escape_string($conn, strtoupper($data["posisi-bkse"]));
-    $id = mysqli_real_escape_string($conn, $data["id-bkse"]);
     $user = mysqli_real_escape_string($conn, $data["user-bkse"]);
     $pemakai = mysqli_real_escape_string($conn, strtoupper($data["pemakai-bkse"]));
     $prosesdate = date("Y-m-d H:i:s");
@@ -5468,6 +5467,7 @@ function ProsesBKSE($data) {
     $idoffice = substr($barang, 0, -14);
     $iddept = substr($barang, 4, -10);
     $kondisi = mysqli_real_escape_string($conn, $data["kondisi-bkse"]);
+    $id = autonum(6, 'nomor_bkse', 'bkse');
 
     // Insert to database
     $query_bkse = "INSERT INTO bkse (nomor_bkse, office_bkse, dept_bkse, div_bkse, tgl_bkse, pluid_bkse, merk_bkse, tipe_bkse, sn_bkse, at_bkse, no_bkse, penempatan_bkse, kerusakan_bkse, user_bkse, pemakai_bkse) VALUES ('$id', '$office', '$dept', '$div', '$tgl', '$pluid', '$merk', '$tipe', '$sn', '$at', '$no', '$penempatan', '$kerusakan', '$user', '$pemakai')";
