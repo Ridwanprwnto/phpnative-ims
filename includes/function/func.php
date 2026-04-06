@@ -3,7 +3,7 @@
 // function get version app
 function getVersion() {
 
-    $version = "V 2.0.5.0";
+    $version = "V 2.0.5.1";
 
     return $version;
 }
@@ -9457,11 +9457,11 @@ function UploadMasterApp($source, $version, $jenis, $page) {
 
     }
 
-    $maxsize = 1024 * 30000; // maksimal 1000 KB (1KB = 1024 Byte)
+    $maxsize = 1024 * 100000; // maksimal 1000 KB (1KB = 1024 Byte)
 
     if($size >= $maxsize || $size == 0) {
 
-        $GLOBALS['alert'] = array("Gagal!", "File yang di upload tidak boleh lebih dari 10MB", "error", "$page");
+        $GLOBALS['alert'] = array("Gagal!", "File yang di upload tidak boleh lebih dari 100MB", "error", "$page");
         return false;
     
     }
