@@ -48,6 +48,15 @@ if(isset($_POST["syncrongsheet_masteraktiva"])){
     }
 }
 
+if(isset($_POST["syncrongsheet_mutasibarang"])){
+    if(SyncronDataGSheetMutasiBarang($_POST)){
+        $alert = array("Success!", "Berhasil Sync Data Google Sheet Mutasi Barang", "success", "$redirect");
+    }
+    else {
+        echo mysqli_error($conn);
+    }
+}
+
 ?>
 <!-- Auto Fill table -->
 <section id="configuration">
@@ -66,8 +75,7 @@ if(isset($_POST["syncrongsheet_masteraktiva"])){
                 </div>
                 <div class="card-content collapse show">
                     <div class="card-body">
-                        
-                    <button type="button" class="btn btn-primary btn-min-width ml-1 mr-1 mb-2" data-toggle="modal" data-target="#entryusertelegram" <?= $id_group == $admin ? "" : "disabled"; ?>>Entry Master Google Sheet</button>
+                        <button type="button" class="btn btn-primary btn-min-width ml-1 mr-1 mb-2" data-toggle="modal" data-target="#entryusertelegram" <?= $id_group == $admin ? "" : "disabled"; ?>>Entry Master Google Sheet</button>
                         <div class="modal fade text-left" id="entryusertelegram" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
@@ -179,6 +187,18 @@ if(isset($_POST["syncrongsheet_masteraktiva"])){
                                                         <option value="" selected disabled>Please Select</option>
                                                     </select>
                                                 </div>
+                                                <div class="col-md-12 mb-2">
+                                                    <label>Data Office : </label>
+                                                    <select id="ofdatasyngsheet" name="ofdatasyngsheet[]" data-placeholder="Please Select" multiple="multiple" class="select2 form-control block" style="width: 100%" type="text" required>
+                                                        <?php
+                                                            $sql_office = mysqli_query($conn, "SELECT id_office, office_name FROM office ORDER BY id_office ASC");
+                                                            while($data_office = mysqli_fetch_assoc($sql_office)) { ?>
+                                                            <option value="<?= $data_office['id_office']; ?>"><?= $data_office['id_office']." - ".strtoupper($data_office['office_name']);?></option>
+                                                        <?php 
+                                                            } 
+                                                        ?>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
@@ -272,6 +292,7 @@ if(isset($_POST["syncrongsheet_masteraktiva"])){
 </section>
 <!--/ Auto Fill table -->
 
+
 <script>
 
 $(document).ready(function(){
@@ -294,7 +315,8 @@ $(document).ready(function(){
                 // Mapping subject ke daftar sheet yang tersedia
                 var sheetOptions = {
                     "MASTER AKTIVA IMS": [
-                        { label: "SHEET_MASTERAKTIVA_IMS",    value: "SHEET_MASTERAKTIVA_IMS" }
+                        { label: "SHEET_MASTERAKTIVA_IMS",    value: "SHEET_MASTERAKTIVA_IMS" },
+                        { label: "SHEET_MUTASIBARANG_IMS",    value: "SHEET_MUTASIBARANG_IMS" }
                     ],
                     // Tambahkan subject lain di sini jika ada
                     // "MASTER LAINNYA": [
@@ -328,6 +350,9 @@ $(document).ready(function(){
     var sheetConfig = {
         "SHEET_MASTERAKTIVA_IMS": {
             btnName: 'syncrongsheet_masteraktiva'
+        },
+        "SHEET_MUTASIBARANG_IMS": {
+            btnName: 'syncrongsheet_mutasibarang'
         }
     };
 
