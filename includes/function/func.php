@@ -3,7 +3,7 @@
 // function get version app
 function getVersion() {
 
-    $version = "V 2.0.5.1";
+    $version = "V 2.0.5.2";
 
     return $version;
 }
@@ -10314,8 +10314,8 @@ function SyncronDataGSheetMasterAktiva($data) {
     $subject = mysqli_real_escape_string($conn, $data["subject-syngsheet"]);
     $office = mysqli_real_escape_string($conn, $_POST["office-syngsheet"]);
     $dept = mysqli_real_escape_string($conn, $_POST["dept-syngsheet"]);
-
-    $kepdat = $office.$dept;
+    $sheet = mysqli_real_escape_string($conn, $_POST["data-syngsheet"]);
+    $datasync = $_POST["ofdatasyngsheet"];
     
     require 'vendor/autoload.php';
 
@@ -10335,10 +10335,11 @@ function SyncronDataGSheetMasterAktiva($data) {
         return false;
 
     }
+    
     $data_sheet = mysqli_fetch_assoc($query_sheet);
     $spreadsheetId = $data_sheet["linkid_sheet"];
-    $rangeClear = $data["data-syngsheet"]."!A2:Z";
-    $rangeAppend  = $data["data-syngsheet"]."!A2";
+    $rangeClear = $sheet."!A2:Z";
+    $rangeAppend  = $sheet."!A2";
 
     // STEP 1: HAPUS SEMUA DATA DI SHEET TERLEBIH DAHULU
     try {
@@ -10353,6 +10354,10 @@ function SyncronDataGSheetMasterAktiva($data) {
     }
     
     // STEP 2: AMBIL DATA DARI DATABASE
+    $dataoffice = array_map(fn($item) => "'".$item . $dept."'", $datasync);
+
+    $dataoffice = implode(", ", $dataoffice);
+
     $result_masaktiva = [];
     $sql_masaktiva = "SELECT A.*, B.NamaBarang, C.NamaJenis, D.id_kondisi, D.kondisi_name, E.username, F.perolehan_dat, F.status_dat, G.tgl_bkse, G.penempatan_bkse, G.kerusakan_bkse, G.user_bkse, H.keterangan_sj, I.tanggal_sj, I.user_sj, I.keperluan_sj FROM barang_assets AS A
     INNER JOIN mastercategory AS B ON LEFT(A.pluid, 6) = B.IDBarang
@@ -10371,7 +10376,7 @@ function SyncronDataGSheetMasterAktiva($data) {
         WHERE pluid_sj = A.pluid AND sn_sj = A.sn_barang
    )
    LEFT JOIN surat_jalan AS I ON H.head_no_sj = I.no_sj
-    WHERE A.dat_asset = '$kepdat' AND A.kondisi != '06' ORDER BY A.pluid ASC";
+    WHERE A.dat_asset IN ($dataoffice) AND A.kondisi != '06' ORDER BY A.pluid ASC";
 
     $query_masaktiva = mysqli_query($conn, $sql_masaktiva);
 
@@ -10433,6 +10438,126 @@ function SyncronDataGSheetMasterAktiva($data) {
     try {
         $body   = new Google_Service_Sheets_ValueRange(['values' => $result_masaktiva]);
         $params = ['valueInputOption' => 'RAW'];
+        $insert = ['insertDataOption' => 'INSERT_ROWS'];
+    
+        $result = $service->spreadsheets_values->append($spreadsheetId, $rangeAppend, $body, $params, $insert);
+        return $result;
+    
+    } catch (Exception $e) {
+        $GLOBALS['alert'] = array("Gagal!", "Gagal mengirim data ke sheet: " . $e->getMessage(), "error", "$page");
+        return false;
+    }
+
+}
+// End function
+
+// ---------------------------- //
+
+// function Syncron Data Google Sheet Mutasi Barang
+function SyncronDataGSheetMutasiBarang($data) {
+
+    global $conn;
+
+    $date = date("Y-m-d H:i:s");
+    $page = mysqli_real_escape_string($conn, $data["page-syngsheet"]);
+    $subject = mysqli_real_escape_string($conn, $data["subject-syngsheet"]);
+    $office = mysqli_real_escape_string($conn, $_POST["office-syngsheet"]);
+    $dept = mysqli_real_escape_string($conn, $_POST["dept-syngsheet"]);
+    $sheet = mysqli_real_escape_string($conn, $_POST["data-syngsheet"]);
+    $datasync = $_POST["ofdatasyngsheet"];
+
+    $kepdat = $office.$dept;
+    
+    require 'vendor/autoload.php';
+
+    $client = new Google_Client();
+    $client->setApplicationName('Google Sheets and PHP');
+    $client->setScopes(Google_Service_Sheets::SPREADSHEETS);
+    $client->setAuthConfig('includes/config/client_secret.json');
+    $client->setAccessType('offline');
+    $client->setPrompt('select_account consent');
+    $service = new Google_Service_Sheets($client);
+
+    // Cek spreadsheet terdaftar
+    $query_sheet = mysqli_query($conn, "SELECT * FROM sheet WHERE subject_sheet = '$subject'");
+    if (mysqli_num_rows($query_sheet) === 0) {
+
+        $GLOBALS['alert'] = array("Gagal!", "Link google sheet belum terdaftar", "error", "$page");
+        return false;
+
+    }
+    
+    $data_sheet = mysqli_fetch_assoc($query_sheet);
+    $spreadsheetId = $data_sheet["linkid_sheet"];
+    $rangeClear = $sheet."!A2:M";
+    $rangeAppend  = $sheet."!A2";
+
+    // STEP 1: HAPUS SEMUA DATA DI SHEET TERLEBIH DAHULU
+    try {
+        $service->spreadsheets_values->clear(
+            $spreadsheetId, 
+            $rangeClear, 
+            new Google_Service_Sheets_ClearValuesRequest()
+        );
+    } catch (Exception $e) {
+        $GLOBALS['alert'] = array("Gagal!", "Gagal menghapus data sheet: " . $e->getMessage(), "error", "$page");
+        return false;
+    }
+    
+    // STEP 2: AMBIL DATA DARI DATABASE
+    $dataoffice = array_map(fn($item) => "'".$item.$dept."'", $datasync);
+
+    $dataoffice = implode(", ", $dataoffice);
+
+    $result_mutasibarang = [];
+
+    $sql_mutasibarang = "SELECT A.saldo_akhir, D.NamaBarang, E.NamaJenis, C.nama_satuan, F.no_btb_dpd, F.ref_btb_dpd, F.office_btb_dpd, F.tgl_btb_dpd, F.pluid_btb_dpd, F.proses_btb_dpd, F.pic_btb_dpd, F.penerima_btb_dpd, F.hitung_btb_dpd, F.qty_awal_btb_dpd, F.qty_akhir_btb_dpd, F.ket_btb_dpd FROM masterstock AS A
+        INNER JOIN mastercategory AS D ON LEFT(A.pluid, 6) = D.IDBarang
+        INNER JOIN masterjenis AS E ON RIGHT(A.pluid, 4) = E.IDJenis
+        INNER JOIN satuan AS C ON D.id_satuan = C.id_satuan
+        INNER JOIN btb_dpd AS F ON CONCAT(A.ms_id_office, A.ms_id_department, A.pluid) = CONCAT(F.office_btb_dpd, F.dept_btb_dpd, F.pluid_btb_dpd)
+        WHERE CONCAT(A.ms_id_office, A.ms_id_department) IN ($dataoffice) ORDER BY F.id_btb_dpd ASC";
+
+    $query_mutasibarang = mysqli_query($conn, $sql_mutasibarang);
+
+    while($data_mutasibarang = mysqli_fetch_assoc($query_mutasibarang)){
+
+        // Reset di setiap iterasi agar tidak terbawa ke baris berikutnya
+        $result_mutasibarang[] = sanitizeRow([
+            $date,
+            $data_mutasibarang["no_btb_dpd"] ?? "",
+            $data_mutasibarang["ref_btb_dpd"] ?? "-",
+            $data_mutasibarang["office_btb_dpd"] ?? "",
+            date("m/d/Y", strtotime($data_mutasibarang["tgl_btb_dpd"])) ?? "",
+            trim($data_mutasibarang["pluid_btb_dpd"] . " - "
+            . $data_mutasibarang["NamaBarang"] . " "
+            . $data_mutasibarang["NamaJenis"]),
+            $data_mutasibarang["nama_satuan"] ?? "",
+            "'" . $data_mutasibarang["pic_btb_dpd"] ?? "",
+            "'" . $data_mutasibarang["penerima_btb_dpd"] ?? "",
+            "'" . $data_mutasibarang["hitung_btb_dpd"] ?? "",
+            "'" . $data_mutasibarang["qty_awal_btb_dpd"] ?? "",
+            "'" . $data_mutasibarang["qty_akhir_btb_dpd"] ?? "",
+            $data_mutasibarang["ket_btb_dpd"] ?? "-",
+        ]);
+    }
+
+    // Cek jika tidak ada data
+    if (empty($result_mutasibarang)) {
+        $GLOBALS['alert'] = array("Perhatian!", "Tidak ada data untuk disinkronkan", "warning", "$page");
+        return false;
+    }
+
+    // Validasi JSON sebelum dikirim
+    if (json_encode(['values' => $result_mutasibarang]) === false) {
+        $GLOBALS['alert'] = array("Gagal!", "JSON Error: " . json_last_error_msg(), "error", "$page");
+        return false;
+    }
+
+    // STEP 3: INSERT DATA BARU KE SHEET
+    try {
+        $body   = new Google_Service_Sheets_ValueRange(['values' => $result_mutasibarang]);
+        $params = ['valueInputOption' => 'USER_ENTERED'];
         $insert = ['insertDataOption' => 'INSERT_ROWS'];
     
         $result = $service->spreadsheets_values->append($spreadsheetId, $rangeAppend, $body, $params, $insert);
