@@ -894,14 +894,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $s_key = '%'. $keyid .'%';
         
         $no = 1;
-        $sql = "SELECT A.*, B.NamaBarang, C.NamaJenis, D.office_name, E.department_name FROM barang_assets AS A
+        $sql = "SELECT A.*, B.NamaBarang, C.NamaJenis, D.office_name, E.department_name 
+        FROM barang_assets AS A
         INNER JOIN mastercategory AS B ON LEFT(A.pluid, 6) = B.IDBarang
         INNER JOIN masterjenis AS C ON RIGHT(A.pluid, 4) = C.IDJenis
         INNER JOIN office AS D ON A.ba_id_office = D.id_office
         INNER JOIN department AS E ON A.ba_id_department = E.id_department
-        WHERE LEFT(A.dat_asset, 4) = '$office' AND RIGHT(A.dat_asset, 4) = '$dept' AND A.pluid = '$barangid' AND A.kondisi NOT LIKE '$arrcond[5]' AND (A.pluid LIKE ? OR B.NamaBarang LIKE ? OR C.NamaJenis LIKE ? OR A.ba_merk LIKE ? OR A.ba_tipe LIKE ? OR A.sn_barang LIKE ? OR A.no_at LIKE ?)";
+        WHERE
+        (
+            LEFT(A.dat_asset, 4) = ?
+            AND RIGHT(A.dat_asset, 4) = ?
+            AND A.pluid = ?
+            AND A.kondisi NOT LIKE ?
+            AND (
+                A.pluid      LIKE ? OR B.NamaBarang LIKE ? OR
+                C.NamaJenis  LIKE ? OR A.ba_merk    LIKE ? OR
+                A.ba_tipe    LIKE ? OR A.sn_barang  LIKE ? OR
+                A.no_at      LIKE ?
+            )
+        )
+        OR
+        (
+            A.ba_id_office     = ?
+            AND A.ba_id_department = ?
+            AND A.pluid            = ?
+            AND A.kondisi NOT LIKE  ?
+            AND (
+                A.pluid      LIKE ? OR B.NamaBarang LIKE ? OR
+                C.NamaJenis  LIKE ? OR A.ba_merk    LIKE ? OR
+                A.ba_tipe    LIKE ? OR A.sn_barang  LIKE ? OR
+                A.no_at      LIKE ?
+            )
+        )";
+
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "sssssss", $s_key, $s_key, $s_key, $s_key, $s_key, $s_key, $s_key);
+        $cond5 = $arrcond[5];
+        mysqli_stmt_bind_param(
+            $stmt,
+            "ssssssssssssssssssssss",
+            $office, $dept, $barangid, $cond5,
+            $s_key, $s_key, $s_key, $s_key, $s_key, $s_key, $s_key,
+            $office, $dept, $barangid, $cond5,
+            $s_key, $s_key, $s_key, $s_key, $s_key, $s_key, $s_key
+        );
+
         mysqli_stmt_execute($stmt);
 
         // cek hasil query
@@ -930,10 +966,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <a class="dropdown-item read_data" href="javascript:void(0)" title="Detail Data SN <?= $data['sn_barang']; ?>" name="read_data" id="<?= $data["id_ba"]; ?>" data-toggle="tooltip" data-placement="bottom">Show Data</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item update_data" href="javascript:void(0)" title="Update Data SN <?= $data['sn_barang']; ?>" name="update_data" id="<?= $data["id_ba"]; ?>" data-toggle="tooltip" data-placement="bottom">Edit Data</a>
-                            <?php if ($id_group == $arrgroup[0] || $id_group == $arrgroup[1]) {?>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item delete_data" href="javascript:void(0)" title="Delete Data SN <?= $data['sn_barang']; ?>" name="delete_data" id="<?= $data["id_ba"]; ?>" data-toggle="tooltip" data-placement="bottom">Delete Data</a>
-                                <?php } ?>
+                            <?php if ($id_group == $arrgroup[0] || $id_group == $arrgroup[1]) {
+                                if ($office.$dept === $data["dat_asset"]) { ?>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item delete_data" href="javascript:void(0)" title="Delete Data SN <?= $data['sn_barang']; ?>" name="delete_data" id="<?= $data["id_ba"]; ?>" data-toggle="tooltip" data-placement="bottom">Delete Data</a>
+                                <?php } 
+                            } ?>
                             </div>
                         </div>
                         <!-- /btn-group -->
