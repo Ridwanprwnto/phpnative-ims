@@ -288,7 +288,7 @@ elseif(isset($_POST["deletebrgcheckdata"])){
                                         $q_brgsrc = mysqli_query($conn, "SELECT A.*, B.IDBarang, B.NamaBarang, C.IDJenis, C.NamaJenis FROM barang_assets AS A
                                         INNER JOIN mastercategory AS B ON LEFT(A.pluid,6) = B.IDBarang 
                                         INNER JOIN masterjenis AS C ON RIGHT(A.pluid,4) = C.IDJenis 
-                                        WHERE LEFT(A.dat_asset, 4) = '$idoffice' AND RIGHT(A.dat_asset, 4) = '$iddept' GROUP BY C.IDJenis ASC
+                                        WHERE LEFT(A.dat_asset, 4) = '$idoffice' AND RIGHT(A.dat_asset, 4) = '$iddept' OR A.ba_id_office = '$idoffice' AND A.ba_id_department = '$iddept' GROUP BY C.IDJenis ASC
                                         ");
                                         while($d_brgsrc = mysqli_fetch_assoc($q_brgsrc)) { ?>
                                             <option value="<?= $id_group.$idoffice.$iddept.$d_brgsrc['pluid']; ?>"> <?= $d_brgsrc['pluid']." - ".$d_brgsrc['NamaBarang']." ".$d_brgsrc['NamaJenis'];?>
