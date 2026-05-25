@@ -2825,9 +2825,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $strdata = implode(", ", $idbrg);
         
         $no = 1;
-        $sql = "SELECT A.id_ba, A.dat_asset, A.ba_id_office, A.ba_id_department, A.pluid, A.ba_merk, A.ba_tipe, A.sn_barang, A.no_at, A.no_lambung, A.kondisi, A.posisi, B.NamaBarang, C.NamaJenis FROM barang_assets AS A
+        $sql = "SELECT A.id_ba, A.dat_asset, A.ba_id_office, A.ba_id_department, A.pluid, A.ba_merk, A.ba_tipe, A.sn_barang, A.no_at, A.no_lambung, A.kondisi, A.posisi, B.NamaBarang, C.NamaJenis, D.office_name, E.department_name FROM barang_assets AS A
         INNER JOIN mastercategory AS B ON LEFT(A.pluid, 6) = B.IDBarang
         INNER JOIN masterjenis AS C ON RIGHT(A.pluid, 4) = C.IDJenis
+        INNER JOIN office AS D ON A.ba_id_office = D.id_office
+        INNER JOIN department AS E ON A.ba_id_department = E.id_department
         WHERE A.id_ba IN ($strdata)";
         $query_head = mysqli_query($conn, $sql);
 
@@ -2845,6 +2847,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <thead>
                     <tr>
                         <th>No</th>
+                        <?php if ($idgrp === $arrgroup[0]) { ?>
+                        <th>Office Location</th>
+                        <th>Department Location</th>
+                        <?php } ?>
                         <th>Merk</th>
                         <th>Tipe</th>
                         <?php if ($idgrp === $arrgroup[0]) { ?>
@@ -2871,10 +2877,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input type="hidden" name="snold_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= $rows['sn_barang']; ?>" class="form-control" readonly/>
                                 <?php if ($idgrp !== $arrgroup[0]) { ?>
                                     <input type="hidden" name="sn_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= $rows['sn_barang']; ?>" class="form-control" required/>
+                                    <input type="hidden" name="offlok_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= $rows['ba_id_office']; ?>" class="form-control" required/>
+                                    <input type="hidden" name="deplok_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= $rows['ba_id_department']; ?>" class="form-control" required/>
                                 <?php } ?>
                                 <input type="hidden" name="offdep_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= substr($rows['dat_asset'], 0, 4).substr($rows['dat_asset'], 4, 4).$rows['pluid']; ?>" class="form-control" readonly/>
                                 <span><?= $no++; ?></span>
                             </td>
+                            <?php if ($idgrp === $arrgroup[0]) { ?>
+                            <td>
+                                <?php
+                                if ($aksi == "EDIT") {
+                                ?>
+                                <select type="text" name="offlok_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" class="select2 form-control block" style="width: 100%">
+                                    <option value="" selected disabled>Please Select</option>
+                                    <?php
+                                        $query_office = mysqli_query($conn, "SELECT id_office, office_name FROM office ORDER BY id_office ASC");
+                                        while($data_office = mysqli_fetch_assoc($query_office)) { ?>
+                                        <option value="<?= $data_office['id_office']; ?>" <?= $data_office['id_office'] == $rows['ba_id_office'] ? 'selected' : ''; ?> ><?= $data_office['id_office']." - ".strtoupper($data_office['office_name']);?></option>
+                                    <?php 
+                                        }
+                                    ?>
+                                </select>
+                                <?php
+                                }
+                                elseif ($aksi == "DELETE") {
+                                ?>
+                                    <?php
+                                        $query_office = mysqli_query($conn, "SELECT id_office, office_name FROM office WHERE id_office = '".$rows['ba_id_office']."'");
+                                        while($data_office = mysqli_fetch_assoc($query_office)) { 
+                                    ?>
+                                        <span><?= $data_office['id_office']." - ".strtoupper($data_office['office_name']); ?></span>
+                                    <?php 
+                                        }
+                                    ?>
+                                <?php
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                if ($aksi == "EDIT") {
+                                ?>
+                                <select type="text" name="deplok_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" class="select2 form-control block" style="width: 100%">
+                                    <option value="" selected disabled>Please Select</option>
+                                    <?php
+                                        $query_dept = mysqli_query($conn, "SELECT id_department, department_name FROM department ORDER BY id_department ASC");
+                                        while($data_dept = mysqli_fetch_assoc($query_dept)) { ?>
+                                        <option value="<?= $data_dept['id_department']; ?>" <?= $data_dept['id_department'] == $rows['ba_id_department'] ? 'selected' : ''; ?> ><?= $data_dept['id_department']." - ".strtoupper($data_dept['department_name']);?></option>
+                                    <?php 
+                                        }
+                                    ?>
+                                </select>
+                                <?php
+                                }
+                                elseif ($aksi == "DELETE") {
+                                ?>
+                                    <?php
+                                        $query_dept = mysqli_query($conn, "SELECT id_department, department_name FROM department WHERE id_department = '".$rows['ba_id_department']."'");
+                                        while($data_dept = mysqli_fetch_assoc($query_dept)) { 
+                                    ?>
+                                        <span><?= $data_dept['id_department']." - ".strtoupper($data_dept['department_name']); ?></span>
+                                    <?php 
+                                        }
+                                    ?>
+                                <?php
+                                }
+                                ?>
+                            </td>
+                            <?php } ?>
                             <td>
                                 <input type="<?= $aksi == "EDIT" ? "text" : "hidden"; ?>" name="merk_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" value="<?= $rows['ba_merk']; ?>" placeholder="Input Merk Barang (Optional)" class="form-control"/>
                                 <?= $aksi == "EDIT" ? "" : "<span>".$rows['ba_merk']."</span>"; ?>
@@ -2901,8 +2971,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <?php
                                 if ($aksi == "EDIT") {
                                 ?>
-                                <select type="text" name="kondisi_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" class="form-control">
-                                    <option value="" selected disabled>Pilih Kondisi</option>
+                                <select type="text" name="kondisi_<?= $aksi == "EDIT" ? "edit" : "delete"; ?>_check[]" class="select2 form-control block" style="width: 100%">
+                                    <option value="" selected disabled>Please Select</option>
                                     <?php
                                         $query_cond = mysqli_query($conn, "SELECT * FROM kondisi WHERE id_kondisi != '$arrcond[5]'");
                                         while($data_cond = mysqli_fetch_assoc($query_cond)) { ?>
