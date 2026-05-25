@@ -3,7 +3,7 @@
 // function get version app
 function getVersion() {
 
-    $version = "V 2.0.5.3";
+    $version = "V 2.0.5.4";
 
     return $version;
 }
@@ -2440,6 +2440,8 @@ function UpdateBarangAssets($data) {
     $posisi = htmlspecialchars(mysqli_real_escape_string($conn, strtoupper($data["posisi-msbarang"])));
     $date = date("Y-m-d H:i:s");
     $kondisi = $data["kondisi-msbarang"];
+    $offloc = isset($data["offlok-msbarang"]) ? $data["offlok-msbarang"] : $data["tmpofflok-msbarang"];
+    $deploc = isset($data["deplok-msbarang"]) ? $data["deplok-msbarang"] : $data["tmpdeplok-msbarang"];
 
     if (strlen($dat) != 10) {
         $GLOBALS['alert'] = array("Gagal!", "Nomor aktiva tidak boleh lebih atau kurang dari 10 digit", "error", "$page");
@@ -2455,7 +2457,7 @@ function UpdateBarangAssets($data) {
         return false;
     }
 
-    mysqli_query($conn, "UPDATE barang_assets SET ba_merk = '$merk', ba_tipe = '$type', sn_barang = '$sn', no_at = '$dat', no_lambung = '$no', posisi = '$posisi', kondisi = '$kondisi', user_asset = '$user', referensi_asset = '$ref', modified_asset = '$date' WHERE id_ba = '$id'");
+    mysqli_query($conn, "UPDATE barang_assets SET ba_id_office = '$offloc', ba_id_department = '$deploc', ba_merk = '$merk', ba_tipe = '$type', sn_barang = '$sn', no_at = '$dat', no_lambung = '$no', posisi = '$posisi', kondisi = '$kondisi', user_asset = '$user', referensi_asset = '$ref', modified_asset = '$date' WHERE id_ba = '$id'");
 
     return mysqli_affected_rows($conn);
 }   
@@ -2499,7 +2501,9 @@ function UpdateCheckBarang($data) {
             $at = strtoupper($data["at_edit_check"][$countarr]),
             strtoupper($data["no_edit_check"][$countarr]),
             $data["kondisi_edit_check"][$countarr],
-            strtoupper($data["posisi_edit_check"][$countarr])
+            strtoupper($data["posisi_edit_check"][$countarr]),
+            $data["offlok_edit_check"][$countarr],
+            $data["deplok_edit_check"][$countarr]
         );
 
         if ($sn !== $snold) {
@@ -2529,7 +2533,7 @@ function UpdateCheckBarang($data) {
     
     foreach ($result as $rows) {
     
-        mysqli_query($conn, "UPDATE barang_assets SET ba_merk = '$rows[5]', ba_tipe = '$rows[6]', sn_barang = '$rows[7]', no_at = '$rows[8]', no_lambung = '$rows[9]', kondisi = '$rows[10]', posisi = '$rows[11]', user_asset = '$user', referensi_asset = '$ref', modified_asset = '$date' WHERE id_ba = '$rows[0]'");
+        mysqli_query($conn, "UPDATE barang_assets SET ba_id_office = '$rows[12]', ba_id_department = '$rows[13]', ba_merk = '$rows[5]', ba_tipe = '$rows[6]', sn_barang = '$rows[7]', no_at = '$rows[8]', no_lambung = '$rows[9]', kondisi = '$rows[10]', posisi = '$rows[11]', user_asset = '$user', referensi_asset = '$ref', modified_asset = '$date' WHERE id_ba = '$rows[0]'");
     }
 
     return mysqli_affected_rows($conn);

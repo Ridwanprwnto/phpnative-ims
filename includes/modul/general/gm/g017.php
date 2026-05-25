@@ -366,6 +366,36 @@ elseif(isset($_POST["deletebrgcheckdata"])){
                                                     <input type="hidden" name="dept-msbarang" id="dept-msbarang" class="form-control" readonly>
                                                     <input type="hidden" name="barang-msbarang" id="barang-msbarang" class="form-control" readonly>
                                                     <input type="hidden" name="kondisiold-msbarang" id="kondisiold-msbarang" class="form-control" readonly>
+                                                    <input type="hidden" name="tmpofflok-msbarang" id="tmpofflok-msbarang" class="form-control" readonly>
+                                                    <input type="hidden" name="tmpdeplok-msbarang" id="tmpdeplok-msbarang" class="form-control" readonly>
+                                                    <?php if ($id_group == $admin) { ?>
+                                                    <div class="col-md-12 mb-2">
+                                                        <label>Office Location : </label>
+                                                        <select class="select2 form-control block" style="width: 100%" type="text" id="offlok-msbarang" name="offlok-msbarang">
+                                                            <option value="" selected disabled>Please Select</option>
+                                                            <?php 
+                                                                $query_off_brg = mysqli_query($conn, "SELECT id_office, office_name FROM office ORDER BY id_office ASC");
+                                                                while($data_off_brg = mysqli_fetch_assoc($query_off_brg)) { ?>
+                                                                <option value="<?= $data_off_brg['id_office'];?>"><?= $data_off_brg['id_office']." - ".strtoupper($data_off_brg['office_name']);?></option>
+                                                            <?php 
+                                                                } 
+                                                            ?>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-12 mb-2">
+                                                        <label>Department Location : </label>
+                                                        <select class="select2 form-control block" style="width: 100%" type="text" id="deplok-msbarang" name="deplok-msbarang">
+                                                            <option value="" selected disabled>Please Select</option>
+                                                            <?php 
+                                                                $query_dep_brg = mysqli_query($conn, "SELECT id_department, department_name FROM department ORDER BY id_department ASC");
+                                                                while($data_dep_brg = mysqli_fetch_assoc($query_dep_brg)) { ?>
+                                                                <option value="<?= $data_dep_brg['id_department'];?>"><?= $data_dep_brg['id_department']." - ".strtoupper($data_dep_brg['department_name']);?></option>
+                                                            <?php 
+                                                                } 
+                                                            ?>
+                                                        </select>
+                                                    </div>
+                                                    <?php } ?>
                                                     <div class="col-md-6 mb-2">
                                                         <label>Merk : </label>
                                                         <input type="text" name="merk-msbarang" id="merk-msbarang" class="form-control" required>
@@ -380,7 +410,7 @@ elseif(isset($_POST["deletebrgcheckdata"])){
                                                         <input type="text" name="sn-msbarang" id="sn-msbarang" class="form-control" required>
                                                     </div>
                                                     <?php } else { ?>
-                                                        <input type="hidden" name="sn-msbarang" id="sn-msbarang" class="form-control">
+                                                        <input type="hidden" name="sn-msbarang" id="sn-msbarang" class="form-control" readonly>
                                                     <?php } ?>
                                                     <div class="col-md-6 mb-2">
                                                         <label>Nomor Aktiva : </label>
@@ -691,12 +721,22 @@ $(document).ready(function(){
                 $('#no-msbarang').val(data.no_lambung);
                 $('#kondisiold-msbarang').val(data.kondisi);
                 $('#posisi-msbarang').val(data.posisi);
+                $('#tmpofflok-msbarang').val(data.ba_id_office);
+                $('#tmpdeplok-msbarang').val(data.ba_id_department);
 
                 $('#kondisidis-msbarang').find('option[value="'+data.kondisi+'"]').remove();
 
                 $('#kondisidis-msbarang').append($('<option></option>').html(data.kondisi+" - "+data.kondisi_name).attr('value', data.kondisi).prop('selected', true));
 
                 $('#label-msbarang').html("Edit Data Barang SN : "+data.sn_barang);
+
+                $('#offlok-msbarang').find('option[value="'+data.ba_id_office+'"]').remove();
+
+                $('#offlok-msbarang').append($('<option></option>').html(data.ba_id_office+" - "+data.office_name.toUpperCase()).attr('value', data.ba_id_office).prop('selected', true));
+
+                $('#deplok-msbarang').find('option[value="'+data.ba_id_department+'"]').remove();
+
+                $('#deplok-msbarang').append($('<option></option>').html(data.ba_id_department+" - "+data.department_name.toUpperCase()).attr('value', data.ba_id_department).prop('selected', true));
 
                 $('#dataModalUpdate').modal('show');
             }  
@@ -747,6 +787,7 @@ function validateForm(aksi) {
             success:function(data){
                 if (aksi == "EDIT") {
                     $('#table-edtbarang-check').html(data);
+                    $(".select2").select2();
                     $('#updatebrgcheck').modal('show');
                 }
                 else if (aksi == "DELETE") {
