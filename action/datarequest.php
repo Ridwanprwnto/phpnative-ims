@@ -2525,7 +2525,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($result as $i => $v) {
                 if ($v[2] == $search_id) {
                     $rows = $v;
-                    if ($rows[9] == "CUTI" || $rows[9] == "CUTI MENDADAK" || $rows[9] == "SAKIT" || $rows[9] == "ALPA" || $rows[9] == "LIBUR PENGGANTI") {
+                    if ($rows[9] == "CUTI" || $rows[9] == "CUTI MENDADAK" || $rows[9] == "SAKIT" || $rows[9] == "ALPA" || $rows[9] == "LIBUR PENGGANTI" || $rows[9] == "DISPENSASI") {
                         ?>
                         <tr>
                             <td>
@@ -2549,7 +2549,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <select type="text" id="edit_cek_hadir" name="edit_cek_hadir[]" class="select form-control" required>
                                     <option value="" selected disabled>Please Select</option>
                                     <?php
-                                        $cek = array('CUTI', 'CUTI MENDADAK', 'SAKIT', 'ALPA', 'LIBUR PENGGANTI');
+                                        $cek = array('CUTI', 'CUTI MENDADAK', 'SAKIT', 'ALPA', 'LIBUR PENGGANTI', 'DISPENSASI');
                                         foreach ($cek as $c) {
                                     ?>
                                         <option value="<?= $c; ?>" <?= $c == $rows[9] ? 'selected' : ''; ?>><?= $c; ?></option>

@@ -3,7 +3,7 @@
 // function get version app
 function getVersion() {
 
-    $version = "V 2.0.5.4";
+    $version = "V 2.0.5.5";
 
     return $version;
 }
@@ -14,7 +14,7 @@ function getVersion() {
 // Function cookie user login
 function log_cookie($encuser, $encpass) {
 
-    // Create expired cookie id
+    // Create expired cookie ids
     setcookie ("id", $encuser, time() + (60 * 10));
     setcookie ("key", $encpass, time() + (60 * 10));
 
