@@ -92,6 +92,7 @@
                                             <option value="CUTI">CUTI</option>
                                             <option value="CUTI MENDADAK">CUTI MENDADAK</option>
                                             <option value="LIBUR PENGGANTI">LIBUR PENGGANTI</option>
+                                            <option value="DISPENSASI">DISPENSASI</option>
                                         </select>
                                     </div>
                                 </div>
