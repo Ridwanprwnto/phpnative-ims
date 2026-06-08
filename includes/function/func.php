@@ -3,7 +3,7 @@
 // function get version app
 function getVersion() {
 
-    $version = "V 2.0.5.5";
+    $version = "V 2.0.5.6";
 
     return $version;
 }
