@@ -803,8 +803,8 @@ elseif ($id_group == $arrgroup[2]) { ?>
                                                 }
                                                 else {
                                                     $color_stck = "";
+                                                    $color_txt = "secondary";
                                                 }
-                                                $color_txt = "secondary";
                                                 ?>
                                                     <tr <?= $color_stck; ?>>
                                                         <td><?= $nocctv++; ?></td>
@@ -1149,8 +1149,8 @@ elseif ($id_group == $arrgroup[3]) { ?>
                                                 }
                                                 else {
                                                     $color_stck = "";
+                                                    $color_txt = "secondary";
                                                 }
-                                                $color_txt = "secondary";
                                                 ?>
                                                     <tr <?= $color_stck; ?>>
                                                         <td><?= $nocctv++; ?></td>
@@ -1400,8 +1400,8 @@ elseif ($id_group == $arrgroup[7]) { ?>
                                             }
                                             else {
                                                 $color_stck = "";
+                                                $color_txt = "secondary";
                                             }
-                                            $color_txt = "secondary";
                                             ?>
                                                 <tr <?= $color_stck; ?>>
                                                     <td><?= $nocctv++; ?></td>
