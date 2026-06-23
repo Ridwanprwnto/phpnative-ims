@@ -31,6 +31,10 @@ elseif(isset($_POST["rejectdata"])){
         echo mysqli_error($conn);
     }
 }
+
+$date_3months_ago = date("d F", strtotime("-3 months"));
+$date_now = date("d F Y");
+$range_text = "$date_3months_ago - $date_now";
 ?>
 <!-- Auto Fill table -->
 <section id="configuration">
@@ -38,7 +42,7 @@ elseif(isset($_POST["rejectdata"])){
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">All Data Follow Up Pelanggaran CCTV</h4>
+                    <h4 class="card-title">All Data Follow Up Pelanggaran CCTV <?= $id_group == $admin ? "All" : $range_text; ?></h4>
                     <a class="heading-elements-toggle"><i class="la la-ellipsis-v font-medium-3"></i></a>
                     <div class="heading-elements">
                         <ul class="list-inline mb-0">
@@ -91,7 +95,12 @@ elseif(isset($_POST["rejectdata"])){
                             </thead>
                             <tbody>
                             <?php
-
+                            if ($id_group == $admin) {
+                                $sqltxt = '';
+                            } else {
+                                $date_3months_ago = date("Y-m-d", strtotime("-3 months"));
+                                $sqltxt = "AND tgl_plg_cctv >= '$date_3months_ago'";
+                            }
                             $no = 1;
                             $result = "SELECT A.*, B.id_office, C.id_department, D.id_divisi, D.divisi_name, E.id_head_ctg_plg, E.name_jns_plg, F.id_ctg_plg, F.name_ctg_plg, G.kode_head_bag_cctv, G.no_lay_cctv, G.channel_lay_cctv, G.penempatan_lay_cctv, H.kode_area_cctv, H.ip_area_cctv, I.divisi_name AS area_cctv, J.username, K.name_fup_plg, user_pelanggaran_cctv.*  FROM pelanggaran_cctv AS A
                             INNER JOIN office AS B ON A.office_plg_cctv = B.id_office
@@ -105,7 +114,7 @@ elseif(isset($_POST["rejectdata"])){
                             LEFT JOIN users AS J ON A.user_plg_cctv = J.nik
                             LEFT JOIN fup_pelanggaran AS K ON A.fup_plg_cctv = K.id_fup_plg
                             LEFT JOIN user_pelanggaran_cctv ON A.no_plg_cctv = user_pelanggaran_cctv.head_no_plg_cctv
-                            WHERE A.office_plg_cctv = '$idoffice' AND A.dept_plg_cctv = '$iddept' AND A.status_plg_cctv != 'Y' GROUP BY A.no_plg_cctv ORDER BY A.no_plg_cctv DESC";
+                            WHERE A.office_plg_cctv = '$idoffice' AND A.dept_plg_cctv = '$iddept' ".$sqltxt." AND A.status_plg_cctv != 'Y' GROUP BY A.no_plg_cctv ORDER BY A.no_plg_cctv DESC";
                             $query = mysqli_query($conn, $result);
                             while($data = mysqli_fetch_assoc($query)) {
                                 $div_plg = $data["div_plg_cctv"];
